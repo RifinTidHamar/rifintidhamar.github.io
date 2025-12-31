@@ -9,7 +9,7 @@
 # Basic Site Settings
 locale                   : "en-US"
 site_theme               : "sunrise" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
-title                    : "Joshua Martinez / Tech Artist"
+title                    : "Home"
 title_separator          : "-"
 name                     : &name "Joshua Martinez"
 description              : &description "Your Name's academic portfolio"   # Update this with a general description of your site, this is the default if not overridden by a page
@@ -24,7 +24,7 @@ repository               : "rifintidhamar/rifintidhamar.github.io"
 author:
   # Biographic information
   avatar           : "logo.png"
-  name             : "Josh"
+  name             : "Joshua Martinez (He/Him)"
   pronouns         : # example: "she/her"  
   bio              : "Real time stylized graphics • Shaders • Simulation • Tool creation"
   location         : "Washington State, USA"
@@ -61,7 +61,7 @@ author:
   lastfm           : # Username
   github           : RifinTidHamar
   linkedin         : joshuatmartinez
-  deviantart       : rifintidhamar
+  deviantart       : rifintidhamar/gallery/all
   mastodon         : # URL
   medium           : # URL
   pinterest        : # Username
