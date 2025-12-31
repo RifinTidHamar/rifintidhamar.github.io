@@ -8,7 +8,7 @@
 
 # Basic Site Settings
 locale                   : "en-US"
-site_theme               : "dirt" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
+site_theme               : "sunrise" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
 title                    : "Joshua Martinez / Tech Artist"
 title_separator          : "-"
 name                     : &name "Joshua Martinez"
@@ -23,7 +23,7 @@ repository               : "rifintidhamar/rifintidhamar.github.io"
 #               Additional customization can be done by editing /_includes/author-profile.html
 author:
   # Biographic information
-  avatar           : "profile.png"
+  avatar           : "logo.png"
   name             : "Josh"
   pronouns         : # example: "she/her"  
   bio              : "Short biography for the left-hand sidebar"

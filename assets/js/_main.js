@@ -6,7 +6,7 @@
 // "system". Default is "system".
 let determineThemeSetting = () => {
   let themeSetting = localStorage.getItem("theme");
-  return (themeSetting != "dark" && themeSetting != "light" && themeSetting != "system") ? "system" : themeSetting;
+  return themeSetting;//(themeSetting != "dark" && themeSetting != "light" && themeSetting != "system") ? "system" : themeSetting;
 };
 
 // Determine the computed theme, which can be "dark" or "light". If the theme setting is
@@ -16,7 +16,7 @@ let determineComputedTheme = () => {
   if (themeSetting != "system") {
     return themeSetting;
   }
-  return (userPref && userPref("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  return "dark";//(userPref && userPref("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
 };
 
 // detect OS/browser preference
@@ -30,19 +30,16 @@ let setTheme = (theme) => {
     $("html").attr("data-theme") ||
     browserPref;
 
-  if (use_theme === "dark") {
+ 
     $("html").attr("data-theme", "dark");
     $("#theme-icon").removeClass("fa-sun").addClass("fa-moon");
-  } else if (use_theme === "light") {
-    $("html").removeAttr("data-theme");
-    $("#theme-icon").removeClass("fa-moon").addClass("fa-sun");
-  }
+  
 };
 
 // Toggle the theme manually
 var toggleTheme = () => {
   const current_theme = $("html").attr("data-theme");
-  const new_theme = current_theme === "dark" ? "light" : "dark";
+  const new_theme = "dark";//current_theme === "dark" ? "light" : "dark";
   localStorage.setItem("theme", new_theme);
   setTheme(new_theme);
 };
@@ -69,7 +66,7 @@ if (plotlyElements.length > 0) {
         elem.parentElement.after(chartElement);
 
         // Set the theme for the plot and render it
-        const theme = (determineComputedTheme() === "dark") ? plotlyDarkLayout : plotlyLightLayout;
+        const theme = plotlyDarkLayout;//(determineComputedTheme() === "dark") ? plotlyDarkLayout : plotlyLightLayout;
         if (jsonData.layout) {
           jsonData.layout.template = (jsonData.layout.template) ? { ...theme, ...jsonData.layout.template } : theme;
         } else {
@@ -95,7 +92,7 @@ $(document).ready(function () {
   window.matchMedia('(prefers-color-scheme: dark)')
         .addEventListener("change", (e) => {
           if (!localStorage.getItem("theme")) {
-            setTheme(e.matches ? "dark" : "light");
+            setTheme("dark");//e.matches ? "dark" : "light");
           }
         });
 
