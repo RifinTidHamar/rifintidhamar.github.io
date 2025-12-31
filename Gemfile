@@ -9,6 +9,7 @@ group :jekyll_plugins do
   gem 'webrick', '~> 1.8'
 end
 
+gem 'wdm', '>= 0.1.1' if Gem.win_platform?
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'github-pages'
 gem 'connection_pool', '2.5.0'
