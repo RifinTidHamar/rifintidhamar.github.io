@@ -1,17 +1,19 @@
 ---
 permalink: /
-title: "About me, Josh"
+title: "About me"
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-This is the front page of a website that is powered by the [Academic Pages template](https://github.com/academicpages/academicpages.github.io) and hosted on GitHub pages. [GitHub pages](https://pages.github.com) is a free service in which websites are built and hosted from code and data stored in a GitHub repository, automatically updating when a new commit is made to the repository. This template was forked from the [Minimal Mistakes Jekyll Theme](https://mmistakes.github.io/minimal-mistakes/) created by Michael Rose, and then extended to support the kinds of content that academics have: publications, talks, teaching, a portfolio, blog posts, and a dynamically-generated CV. Incidentally, these same features make it a great template for anyone that needs to show off a professional template!
+I am a Tech Artist with a love for Stylized Graphics. My desire to make games goes back to my first time playing Halo 3. I adored the game, and I wanted to make something like it. I didn't have internet for the first 12 years of my life, so instead of using internet forums, I remeber sending letters to video game companies with little fanarts inside. 
 
- You can fork [this template](https://github.com/academicpages/academicpages.github.io) right now, modify the configuration and Markdown files, add your own PDFs and other content, and have your own site for free, with no ads!
+My first step into game creation was when I was 12. It was honest, but somewhat misguided. I started learning Blender. Here are some of [my very earliest renders](https://drive.google.com/drive/folders/0B4Z0V6UXsMYiS3hYUXU2X2FHSlE?resourcekey=0-l2XwzR7xxhOHXVj0Fozqsg&usp=sharing). You see, I had zero idea what it meant to make a game, and for some reason I thought people made games completely inside of tools like Blender. Like I actually thought a game was exactly like a movie, and they just pre-plan every possible thing a user might do, and render out an image for every possibility. Can you imagine the infinite amount of storage that would take? Eventually I figured out that's not how games work, but I still always loved Blender. And while I didn't explicitly learn to make games, I did learn valuable concepts for my tech art career. Concepts you see popping up in tech art all the time: 3D models, Vertices, Texture wrapping and UV coordinates, and even an introduction into shaders with their node system. It helped me visualize what I would later code. 
 
-A data-driven personal website
+in an attempt My first time learning anything about programming was during the winter of 2014, with this channel called [Chili Tomato Noodle Soup](https://www.youtube.com/watch?v=PwuIEMUFUnQ&list=PLqCJpWy5FohcehaXlCIt8sVBHBFFRVWsx). I would've been 13. The objective
+
+Next
 ======
 Like many other Jekyll-based GitHub Pages templates, Academic Pages makes you separate the website's content from its form. The content & metadata of your website are in structured Markdown files, while various other files constitute the theme, specifying how to transform that content & metadata into HTML pages. You keep these various Markdown (.md), YAML (.yml), HTML, and CSS files in a public GitHub repository. Each time you commit and push an update to the repository, the [GitHub pages](https://pages.github.com/) service creates static HTML pages based on these files, which are hosted on GitHub's servers free of charge.
 
