@@ -39,5 +39,28 @@
 
     "vendor/font-awesome/fontawesome",
     "vendor/font-awesome/solid",
-    "vendor/font-awesome/brands"
-;
+    "vendor/font-awesome/brands";
+
+.campfire-container-center {
+  text-align: center;      /* centers the GIF */
+  pointer-events: none;    /* optional: doesn’t interfere with clicks */
+}
+
+.campfire-gif {
+  width: 60px;             /* small size for your layout */
+  height: auto;            /* keeps aspect ratio */
+  image-rendering: pixelated;       /* keeps it blocky */
+  image-rendering: crisp-edges;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-pixelated;
+  image-rendering: -webkit-optimize-contrast;
+  display: inline-block;   /* ensures it stays in flow */
+}
+
+/* Mobile adjustment */
+@media (max-width: 768px) {
+  .campfire-gif {
+    width: 60px;           /* smaller on mobile */
+  }
+}
+
