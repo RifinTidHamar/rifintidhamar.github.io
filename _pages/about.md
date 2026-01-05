@@ -21,7 +21,7 @@ While I didn't explicitly learn to make games with Blender, I did learn valuable
 Hello World
 ======
 
-At 13, my first time learning anything about programming was during the winter of 2014, with this channel called [Chili Tomato Noodle Soup](https://www.youtube.com/watch?v=PwuIEMUFUnQ&list=PLqCJpWy5FohcehaXlCIt8sVBHBFFRVWsx). The objective of the series was to make a small game, where every pixel was hand placed using DirectX. The environment around my first time coding still sticks with me as a core memory. I had just moved to Washington, I was in my Aunt's warm basement watching the snow fall in the woods outside, my older brother was playing Destiny next to me, I was listening to Puscifer's [Humbling River](https://www.youtube.com/watch?v=siWusSBld7k&list=RDsiWusSBld7k&start_radio=1), and I was just about to print on my screen for the first time ***"Hello World!"***  
+At 13, my first time learning anything about programming was during the winter of 2014, with this channel called [Chili Tomato Noodle Soup](https://www.youtube.com/watch?v=PwuIEMUFUnQ&list=PLqCJpWy5FohcehaXlCIt8sVBHBFFRVWsx). The objective of the series was to make a small game, where every pixel was hand placed using DirectX. The environment around my first time coding still sticks with me as a core memory. I had just moved to Washington, I was in my Aunt's warm basement watching the snow fall in the cold fir forest outside, my older brother was playing Destiny next to me, I was listening to Puscifer's [Humbling River](https://www.youtube.com/watch?v=siWusSBld7k&list=RDsiWusSBld7k&start_radio=1), and I was just about to print on my screen for the first time ***"Hello World!"***  
 
 Over the years
 ======
@@ -41,7 +41,7 @@ Shaders
 
 I always cared about how my games looked, both those that I played and those that I made. I would do my best with pixel art or modeling, but there was always something missing: The FX. Sure I could use built in materials or particles, but it just never quite hit exactly how I wanted. 
 
-I had heard whispers from the dark seldom-trodden limits of the internet of this strange... *thing* called a "Shader." But it was all rumor or perhaps something only the truly mad would dare engage. At best, maybe something I would learn in the distant future I thought. Then I stumbled across [Sebastian Lague](https://www.youtube.com/@SebastianLague). This guy made things in Unity I couldn't even imagine how to start: volumetric atmospheres, lovecraftian generated 3D fractals, and procedural planets. At the core of all these were "Shaders." It was so cool, and frankly I was jealous *he* could do that and *I* couldn't. So I started learning.
+I had heard whispers from the dark seldom-trodden limits of the internet about this strange... *thing* called a "Shader." But it was all rumor or perhaps something only the truly mad would dare engage. At best, maybe something I would learn in the distant future I thought. Then I stumbled across [Sebastian Lague](https://www.youtube.com/@SebastianLague). This guy made things in Unity I couldn't even imagine how to start: volumetric atmospheres, lovecraftian generated 3D fractals, and procedural planets. At the core of all these were "Shaders." It was so cool, and frankly I was jealous *he* could do that and *I* couldn't. So I started learning.
 
 Much of my early shader learning was through [The Art of Code](https://www.youtube.com/@TheArtofCodeIsCool). That channel taught me about concepts like fragment shaders, ray marching, and procedural shapes. Here is my first shader generated thing, ["Josh."](https://www.shadertoy.com/view/tl2XWc) 
 
@@ -56,7 +56,7 @@ During this time the depth of the program's capability was increased, and its na
 
 After the optimization class, Dr.K hired me on as an official Research Assistant, where I continued working on GLCL-3D, including [publishing a research paper](https://arxiv.org/ftp/arxiv/papers/2403/2403.13014.pdf), and giving a [presentation at IV2023](https://www.youtube.com/watch?v=0DLcBeQzfCg). One of my other professors, Dr. Razvan Andonie even cited me in their own research paper. Isn't that awesome?
 
-I also worked on another program called VisCanvas, where I would document code from past devs, create a sequential rule generation algorithm for speeding up rule Generation, drastically reformat rule-text output, and play with existing OpenGL. 
+I also worked on another program called VisCanvas where I documented code from past devs, co-created a sequential rule generation algorithm for speeding up rule Generation by up to hours, drastically reformated rule-text output, and played with existing OpenGL so that users could adjust visuals with a config file. 
 
 After College
 ======
