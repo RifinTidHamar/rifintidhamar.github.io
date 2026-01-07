@@ -15,7 +15,7 @@ We will be breaking down the process of the forest in this video.
 Intro: Making a tree
 ----
 Look at this amazing thing. Two triangles. Beautiful. \
-<img src="\images\generated-tree\twotriangles.png">
+<img src="\images\generated-tree\twoTriangles.png">
 
 but what's this? Now there is a rhombus. Indeed quite beautiful... but where did the two triangles go? \
 <img src="\images\generated-tree\rhombus.png">
@@ -43,7 +43,7 @@ And now wait what is this? Indeed another beautful shape stacked upon the other.
 <img src="\images\generated-tree\line.png">
 
 Of all things, I coudln't have imagined this. No I couldn't have imagined anything near its standard! A perfectly varied brown line! \
-<img src="\images\generated-tree\BrownLineVaried.png">
+<img src="\images\generated-tree\brownLineVaried.png">
 
 A good day say I! a good day! Ah, and though it is over, I feel no sadness. For it was magnificent. 
 \
