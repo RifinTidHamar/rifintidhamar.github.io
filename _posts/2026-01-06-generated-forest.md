@@ -51,18 +51,23 @@ A good day say I! a good day! Ah, and though it is over, I feel no sadness. For 
 \
 \
 But have I spoken too soon? Is more even possible? For now I see a green line. \
-*tree with green line* 
+<img src="\images\generated-tree\treeWOneLeaf.png">
+ 
 
-And yet again, less I am mad! But no! Two more green lines! \
-*tree with three green lines*
+And yet again. Alas, I have gone mad. It must be. \
+But no! Two more green lines! \
+<img src="\images\generated-tree\treeWTwoLeaf.png">
 
 I fear this may be too much for me. Can my eyes handle this, neigh, my soul? For the lines ever increase! \
-*tree with more lines* \
-*tree with more lines* 
+<img src="\images\generated-tree\treeOThird.png">
+<img src="\images\generated-tree\treeTThird.png">
 
 Though I was in darkness, now I see. It was mere shapes to me, and that would have been enough. But now, as though I have been struck, it is a tree before me. Yes, I was blind. \
-*tree* 
+<img src="\images\generated-tree\tree.png">
 
 Grass
 ----
-So uh... that was a little weird. Just trying to make it interesting you know?
+So uh... that was a little weird. Just trying to make it interesting you know? Anyway, Here's what those steps look like generated in engine for a single tree. \
+<img src="\images\generated-tree\treeWithGrass.png">
+
+So next, we are gonna go through the grass.
