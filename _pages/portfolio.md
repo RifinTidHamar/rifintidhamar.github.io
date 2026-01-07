@@ -14,7 +14,7 @@ Per Texel Lighting. [BreakDown]()
 {% include youtube.html id="tXuKOs4_7Mw" %}
 \
 \
-GLC-3D. A look into the program that I made in as a research assistant at CWU
+GLC-3D. A look into the program that I made as a research assistant at CWU
 {% include youtube.html id="JrPOSkUqRmU" %}
 \
 \
@@ -28,7 +28,7 @@ Blue Cave
 {% include youtube.html id="Ws-bU89hedo" %}
 \
 \
-Flimsy Generate Paper. [Breakdown]()
+Flimsy Generated Paper. [Breakdown]()
 {% include youtube.html id="fGGO5vmnz3U" %}
 \
 \
@@ -44,7 +44,7 @@ Interacting with 3D smoke
 {% include youtube.html id="r1WmCaGGPiY" %}
 \
 \
-Procedural Trees. [Breakdown]()
+Procedural Trees. [Breakdown](http://localhost:4000/posts/2026/01/generated-forest/)
 {% include youtube.html id="y8nq1nw3OyY" %}
 \
 \
@@ -53,11 +53,11 @@ Interactable Mud Texture
 
 Walkthoughs and Commentary on my Games
 ------
-Card Game. A game I made with my college group
+Card Game. A game I made with my college group.
 {% include youtube.html id="YOxOCwjYIwA" %}
 \
 \
-'820' A little game about a beam of light traveling to earth
+'820' A little prototype about a beam of light traveling to earth
 {% include youtube.html id="xBZlcRnPtss" %}
 \
 \
