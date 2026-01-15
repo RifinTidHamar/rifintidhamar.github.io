@@ -10,7 +10,7 @@ A glimpse of my work. Includes Procedural Models and Textures, a Custom lighting
 
 Deeper Dives into Tools
 ------
-Per Texel Lighting. [BreakDown]()
+Per Texel Lighting.
 {% include youtube.html id="tXuKOs4_7Mw" %}
 \
 \
@@ -28,7 +28,7 @@ Blue Cave
 {% include youtube.html id="Ws-bU89hedo" %}
 \
 \
-Flimsy Generated Paper. [Breakdown]()
+Flimsy Generated Paper.
 {% include youtube.html id="fGGO5vmnz3U" %}
 \
 \
