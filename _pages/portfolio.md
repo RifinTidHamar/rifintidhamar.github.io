@@ -44,7 +44,7 @@ Interacting with 3D smoke
 {% include youtube.html id="r1WmCaGGPiY" %}
 \
 \
-Procedural Trees. [Breakdown](http://localhost:4000/posts/2026/01/generated-forest/)
+Procedural Trees. [Breakdown](/posts/2026/01/generated-forest/)
 {% include youtube.html id="y8nq1nw3OyY" %}
 \
 \
