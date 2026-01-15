@@ -1,13 +1,33 @@
 ---
 permalink: /
-title: "About me"
+title: "Home"
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-I am a Tech Artist with a love for Stylized Graphics. 
+What's going on, man?
+------
+I am a Tech Artist with a love for Stylized Graphics. ***AND IM LOOKING FOR WORK!*** That can be either in washington state where im located, or fully remote. Here's a look at my main reel
+{% include youtube.html id="w6rmE-QD0FM" %}
+\
+\
+Here's a summary of every page on this website
+
+[**Portfolio**](/portfolio/): Deep dives, short snippets, and commentary walkthroughs of some my work. 
+
+[**Break Downs**](/year-archive/): Technical and conceptual breakdowns of some of my projects. 
+
+[**CV**](/cv/): My professional history, and professional facts. Professional. 
+
+[**Publications**](/publications/): My published research papers.
+
+[**Thoughts**](/thoughts/): Just some thoughts I have throughout the days.
+
+From babe 'till now
+----
+This page from here on out is my backstory and how I got into gamemaking and tech art. 
 
 My desire to make games goes back to my first time playing Halo 3. I adored the game, and I wanted to make something like it. When I was 10, I even told Bungie through a physical letter how much I loved Halo. In fact they responded and gave me a sticker, which I still have today on my original Xbox 360 casing. 
 
