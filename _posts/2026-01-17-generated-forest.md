@@ -1,11 +1,9 @@
 ---
-title: 'Generated Forest'
-date: 2026-01-06
+title: 'Conceptual Generated Forest'
+date: 2026-01-17
 permalink: /posts/2026/01/generated-forest/
 tags:
-  - cool posts
-  - category1
-  - category2
+  - conceptual
 ---
 Are you curious how to turn simple shapes into complex scenes? This might answer that for you!
 
