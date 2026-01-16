@@ -7,6 +7,7 @@ redirect_from:
 ---
 
 {% include base_path %}
+[Single page PDF Link](https://drive.google.com/file/d/1nJhJykZOjQtrLBm3qZ5rxt2kp04bEwPf/view?usp=sharing)
 
 Experience
 ======
@@ -21,6 +22,8 @@ Experience
   * Sequential Rules: a rule-generation algorithm for data sets (ie mushroom data) for faster, less-detailed rules. The algorithm helped a previous more-expensive algorithm allocate resources and time towards generating more-detailed rules. Possibly reducing compute time by hours on larger data sets. [code](https://github.com/CWU-VKD-LAB/Standalone_Rule_Generation/blob/main/StandaloneRuleGeneration_V1.2/Source.cpp)
   * Improved user experience by developing a loading screen. Uses only two lines of code where programmers expected lengthy calculations, and it allows for changing text as the program loads. Previously the program would just freeze until finished.
   * Documented uncommented code from previous programmers by creating UML diagrams in the user manual, leaving comments in the code, writing extensive pseudocode, and creating an FAQ page. This was to help future programmers get onboard quicker.
+  * Modified existing OpenGL code so that users could change the visualization using a config file. Options included line thickness, line count, and the ability to hide classes of data with low cases. 
+
 
 * IT intern at Archer school for girls (Jun 2024 – Dec 2024)
   * Scripted in bash. Deployed as automatic scripts to student mac laptops. One script had students update their laptop, another had students restart their laptop if it had been over two weeks.
@@ -73,13 +76,13 @@ Skills
 Education
 ======
 * September 2019 – July 2023  
-  * Central Washington University  
-  * Computer science BS, Math Minor  
-  * Relevant Courses:
-    * Guided study in shaders
-    * Guided study in graphics profiling
-    * OpenGL
-    * UI design
-    * Unreal engine
-    * Linear algebra
-    * Udemy course: unity compute shaders by Nicholas Lever
+* Central Washington University  
+* Computer science BS, Math Minor  
+* Relevant Courses:
+  * Guided study in shaders
+  * Guided study in graphics profiling
+  * OpenGL
+  * UI design
+  * Unreal engine
+  * Linear algebra
+  * Udemy course: unity compute shaders by Nicholas Lever

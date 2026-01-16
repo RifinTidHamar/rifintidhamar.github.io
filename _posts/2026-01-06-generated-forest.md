@@ -36,10 +36,10 @@ But now wait. What's this. Another rhombus? \
 Indeed I thought one rhombus was good. Two rhombuses is just... It's beautiful. That's all I really mean to say. Beautiful. 
 \
 \
-My eyes surely decieve me! For it appears the rhombuses have joined just as the triangles previous! It is a shape, that indeed I cannot name, and yet... I don't need to. Its beauty excells a name! \
+My eyes surely decieve me! For it appears the rhombuses have joined just as the triangles previous! It is a shape that indeed I cannot name, and yet... I don't need to. Its beauty excells a name! \
 <img src="\images\generated-tree\joinedRhombuses.png">
 
-And now wait what is this? Indeed another beautful shape stacked upon the other. A line! Yes a line! Not too bent nor too straight. Indeed not too bent nor too straight! \
+And what is this? Indeed another beautful shape stacked upon the other. A line! Yes a line! Not too bent nor too straight. Indeed not too bent nor too straight! \
 <img src="\images\generated-tree\line.png">
 
 Of all things, I coudln't have imagined this. No I couldn't have imagined anything near its standard! A perfectly noise-varied brown line! \
@@ -70,7 +70,7 @@ Grass
 So uh... that was a little weird. Just trying to make it interesting you know? Anyway, here's what those steps look like generated in-engine for a single tree. \
 <img src="\images\generated-tree\treeWithGrass.png">
 
-You'll notice that picture has grass. We are gonna go through that next. For ease of understanding, first I will write out the steps, and then show pictures.
+You'll notice that picture has grass. We are gonna go through that next. For ease of understanding first I will write out the steps, and then show pictures.
 
 Written Steps
 ======
@@ -78,7 +78,7 @@ Written Steps
 1. Make a noise texture [***N***]. This will be cut apart, and used as our grass. 
     * Generate large noise [***LN***].
     * Generate very small noise [***SN***] which is slightly more compressed horizontally than vertically.
-    * ***N*** = ***LN*** \* ***SN***. This way our final grass will have larger hills ***N*** with finer blades ***SN***.
+    * ***N*** = ***LN*** \* ***SN***. This way our final grass will have larger hills ***LN*** with finer blades ***SN***.
 1. Make the grass bounding box, which will be the grass-noise [***GN***]. 
     * Create four very steep gradients.
     * Two gradients will be vertical, and two horizontal.
@@ -123,7 +123,7 @@ Many Treess
 
 One tree is fine and all, but it's not much of a forest. That would be like walking around with one brain cell and calling it a brain. Although, that happens to exactly describe my little sister. 
 
-Anyway, we had better add some more trees. Like before I will describe the steps, and then visualize them. But before that here's the gist. We are going to fake perspective and lighting. We are going to do this by moving a plane of trees towards an orthographic camera, while scaling the trees up and making them brighter as they get closer to that camera. We are using an orthographic camera, since transparent sprites don't play very nice in perspective. 
+Anyway, we had better add some more trees. Like before I will describe the steps, and then visualize them. But before that here's the gist. We are going to fake perspective and lighting. We are going to do this by moving a bunch of trees towards an orthographic camera, while scaling the trees up and making them brighter as they get closer to that camera. We are using an orthographic camera since transparent sprites don't play very nice in perspective. 
 
 Written Steps
 ======
@@ -131,22 +131,22 @@ Written Steps
 1. Make a bounding Rectangle [***BR***].
 1. Place an orthographic camera [***OC***] with the forward vector perpendicular to one of ***BR***'s sides. 
 1. Randomly place a generated tree sprite [***T***] within ***BR***, with rotation opposite that of ***OC***'s forward vector (so that it is facing ***OC***). 
-    * Do not spawn ***T*** within a line going all the way through the middle of ***BR***, Following ***OC***'s forward vector, so that it will not hit ***OC*** as it moves forward in a later step.
-1. Create an exponential function which takes ***T***'s Z-position, considers where that position is within ***BR***, and outputs a value, Tree-Z [***TZ***], which exponentially grows between 0 and 1 depending on how close the position is to the side of ***BR*** perpendicular and nearest ***OC***. 
+    * Do not spawn ***T*** within a narrow line following ***OC***'s forward vector all the way through the middle of ***BR***, so that it will not hit ***OC*** as it moves forward in a later step.
+1. Create an exponential function which takes ***T***'s Z-position, considers where that position is within ***BR***, and outputs a value, Tree-Z [***TZ***], which exponentially grows between 0 and 1 depending on how close the position is to the side of ***BR*** nearest ***OC***. 
     * Linearly interpolate ***T***'s scale between a minimum scale and a maximum scale based on ***TZ*** (***T*** get's exponetially bigger as it get's nearer).
     * Linearly interpolate ***T***'s color between a dark color and a bright color based on ***TZ*** (***T*** get's exponentially brighter as it get's nearer).
 1. Move ***T*** opposite ***OC***'s forward vector by a small amount (moving toward's ***OC***)
-1. Create a linear function which takes ***T***'s X-position, considers where that position is within ***BR***, and outputs a value, Tree-X [***TX***], which linearly grows between 0 and 1 as the tree approaches the side of the square parallel ***T***'s rotation. 
-    * Linearly interpolate ***T***'s horizontal movement between a left-speed and a right-speed based on ***TX***. Multiply the horizontal movent by ***TZ*** (***T*** moves epxonentially faster out of frame as it get's nearer).
-    * notice having a left and right speed makes it so the if ***T*** is left of camera, it moves left, and if it is right of camera, it moves right. 
-1. If ***T*** reaches a certain scale, respawn the tree (with a new generated texture) on a random position anywhere on the edge of ***BR*** farthest ***OC***. (this keeps the forest infinitely scrolling)  
+1. Create a linear function which takes ***T***'s X-position, considers where that position is within ***BR***, and outputs a value, Tree-X [***TX***], which linearly grows between 0 and 1 as the tree approaches the side of the square parallel ***T***'s movement. 
+    * Linearly intSerpolate ***T***'s horizontal movement between a left-speed and a right-speed based on ***TX***. Multiply the horizontal movent by ***TZ*** (***T*** moves epxonentially faster out of frame as it get's nearer).
+    * notice having a left and right speed makes it so the if ***T*** is left of ***OC***, it moves left, and if it is right of ***OC***, it moves right. 
+1. If ***T*** reaches a certain scale, respawn ***T***S (with a new generated texture) on a random position anywhere on the edge of ***BR*** farthest ***OC***. (this keeps the forest infinitely scrolling)  
 1. Do step 3 for as many trees as you would like in your scene, and repeate steps 4-7 for every tree for every frame. 
 
 Visual Steps
 ======
 
-Make ***BR*** and ***OC***. \
-TopDown pic
+Make ***BR*** (gray plane) and ***OC*** (white camera Icon). Notice ***OC***'s forward vector is perpendicular one of ***BR***'s sides. \
+<img src="\images\generated-tree\movingTrees\TopDownCam.png">
 
 Randomly place ***T*** on ***BR***, excluding a small width following ***OC***'s forward vector (Red). For the sake of display, the tree is not randomly placed in my picture. Instead it is placed at the far-back center of ***BR*** to display an extreme case throughout the following visuals. The left picture is the scene view from above (the green square being the tree location and size), and the right picture is the view from ***OC***. \
 <img src="\images\generated-tree\movingTrees\initWithRed.png">
@@ -194,17 +194,17 @@ Next ***T*** must be moved Towards the camera. The effects of such will be displ
 Final Touch
 ------
 
-So now a still frame of our forest, with all the steps from above applied to 200 hundred trees, looks like this. \
+This is still frame of our forest with all the steps from above applied to 200 hundred trees. \
 <img src="\images\generated-tree\movingTrees\noBG.png">
 
-Our last step is filling in all the grey spots. We need 3 things: a night sky, trees in the horizon, and grass. Perhaps we could generate something, but since the gray space is little, it's easier and more time effective to make a flat image which goes behind the generated trees. \
+Our last step is filling in all the grey spots in the background [***BG***]. We need 3 things: a night sky, trees in the horizon, and under-grass. Perhaps we could generate something, but since the gray space is little it's easier and more time effective to make a flat image which goes behind the generated trees. \
 <img src="\images\generated-tree\movingTrees\EastNightSky.png">
 
 Notes
 ------
-Make sure to keep all the pixel resolutions the same for a pixel perfect final product. You also will need to render the image to a resolution which equals your background image from the final touch. This way the trees stay pixel perfect while they are scaled up. 
+Make sure to keep all the pixel resolutions the same for a pixel perfect final product. You also will need to render the image to a resolution which equals ***BG***. This way the trees stay pixel perfect while they are scaled up. 
 
-There are also shooting stars, which I did not include a breakdown to as they aren't part of the forest. But, they are basically just a pixel that shoots across a texture. That texture is not refreshed every frame, but instead every pixel alpha is subtracted a small amount which leaves a tail behind the moving pixel. 
+There are also shooting stars, which I did not include in this breakdown as they aren't part of the forest. But, they are basically just a pixel that shoots across a texture. That texture is not refreshed every frame, but instead every pixel alpha is subtracted a small amount which leaves a tail behind the moving pixel. 
 
 Thanks for Reading
 ======
