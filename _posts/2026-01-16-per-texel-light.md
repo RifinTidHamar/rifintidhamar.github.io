@@ -8,7 +8,7 @@ tags:
 ---
 Do you want to emulate older 3D games but with a new touch? This might interest you.
 
-expected post: end of January
+expected post: mid feb
 
 We will be conceptually and technically breaking down the process of the forest in this video.
 {% include youtube.html id="tXuKOs4_7Mw" %}
