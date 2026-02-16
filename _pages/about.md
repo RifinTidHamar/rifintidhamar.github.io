@@ -8,6 +8,7 @@ redirect_from:
 ---
 
 About
+====
 ------
 I am a Tech Artist with a love for Stylized Graphics. ***AND IM LOOKING FOR WORK!*** That can be either in washington state where im located, or fully remote. Here's a look at my main reel
 {% include youtube.html id="w6rmE-QD0FM" %}
@@ -26,6 +27,7 @@ Here's a summary of every page on this website:
 [**Thoughts**](/thoughts/): Just some thoughts I have throughout the days.
 
 From babe 'till now
+=====
 ----
 This page from here on out is about how I got into gamemaking and tech art. 
 

@@ -11,6 +11,7 @@ We will be conceptually breaking down the process of the forest in this video.
 {% include youtube.html id="y8nq1nw3OyY" %}
 
 Tree
+====
 ------
 Look at this amazing thing. Two triangles. Beautiful. \
 <img src="\images\generated-tree\twoTriangles.png">
@@ -64,6 +65,7 @@ Though I was in darkness, now I see. It was mere shapes to me, and that would ha
 <img src="\images\generated-tree\tree.png">
 
 Grass
+=====
 -----
 So uh... that was a little weird. Just trying to make it interesting you know? Anyway, here's what those steps look like generated in-engine for a single tree. \
 <img src="\images\generated-tree\treeWithGrass.png">
@@ -116,7 +118,8 @@ Add in the grass color, again using ***GN***. Zoomed in for clarity. \
 
 And now you have your grass! 
 
-Many Treess
+Many Trees
+=====
 ------
 
 One tree is fine and all, but it's not much of a forest. That would be like walking around with one brain cell and calling it a brain. Although, that happens to exactly describe my little sister. 
@@ -190,16 +193,17 @@ Next ***T*** must be moved Towards the camera. The effects of such will be displ
 <img src="\images\generated-tree\movingTrees\9.png">
 
 Final Touch
+======
 ------
 
-This is still frame of our forest with all the steps from above applied to 200 hundred trees. \
+This is the still frame of our forest with all the steps from above applied to 200 hundred trees. \
 <img src="\images\generated-tree\movingTrees\noBG.png">
 
 Our last step is filling in all the grey spots in the background [***BG***]. We need 3 things: a night sky, trees in the horizon, and under-grass. Perhaps we could generate something, but since the gray space is little it's easier and more time effective to make a flat image which goes behind the generated trees. \
 <img src="\images\generated-tree\movingTrees\EastNightSky.png">
 
 Notes
-------
+=====
 Make sure to keep all the pixel resolutions the same for a pixel perfect final product. You also will need to render the image to a resolution which equals ***BG***. This way the trees stay pixel perfect while they are scaled up. 
 
 There are also shooting stars, which I did not include in this breakdown as they aren't part of the forest. But, they are basically just a pixel that shoots across a texture. That texture is not refreshed every frame, but instead every pixel alpha is subtracted a small amount which leaves a tail behind the moving pixel. 

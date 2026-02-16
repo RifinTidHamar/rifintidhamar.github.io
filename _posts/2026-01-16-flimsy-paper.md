@@ -9,5 +9,5 @@ Curious about how to make non-intensive paper physics? You might like this.
 
 expected post: end of February
 
-We will be technically breaking down the process of the forest in this video.
+We will be technically breaking down the process of the paper in this video.
 {% include youtube.html id="fGGO5vmnz3U" %}
