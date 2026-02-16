@@ -1,7 +1,7 @@
 ---
 title: 'Conceptual and technical Per Texel Light (Incomplete)'
-date: 2026-01-16
-permalink: /posts/2026/01/Per-Texel-Light/
+date: 2026-02-16
+permalink: /posts/2026/02/Per-Texel-Light/
 tags:
   - conceptual
   - technical

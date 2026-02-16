@@ -3,6 +3,9 @@ title: "Thoughts"
 permalink: /thoughts/
 author_profile: true
 ---
+<i class="fa fa-calendar"></i> 2/16/2026 \
+I had a interview/chat with a guy named Jack today. It was for a scholarship. I don't think he liked me. The purpose of the chat was to demo my project, but he didn't want to see it. 
+
 <i class="fa fa-calendar"></i> 1/19/2026 \
 I had a chat with a guy named marc today. He works at Compulsion Games. He was very nice, and he had some great tips. I learned that a Tech Artist should bridge the gap between programmers and Artists. They should try to make life easier, by making intuitive easy-to-use tools. 
 
