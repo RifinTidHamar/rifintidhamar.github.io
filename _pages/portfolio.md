@@ -11,7 +11,7 @@ A glimpse of my work. Includes Procedural Models and Textures, a Custom lighting
 Deeper Dives into Tools
 ------
 ***Per Texel Lighting*** -- This is a custom lighting-model which lights per texel (using an object's UVs). Its purpose is mainly artistic, but future plans include raytraced lighting optimized even for mobile devices. 
-{% include youtube.html id="tXuKOs4_7Mw" %}
+{% include youtube.html id="Uief5d7zBRc" %}
 \
 \
 ***GLC-3D*** -- A look into the program that I made as a research assistant at CWU. Its purpose is to allow data scientists to explore data visually. 
