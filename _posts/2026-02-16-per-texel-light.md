@@ -1,5 +1,5 @@
 ---
-title: 'Conceptual and technical Per Texel Light (Incomplete)'
+title: 'Conceptual and technical Per Texel Light (in-progress)'
 date: 2026-02-16
 permalink: /posts/2026/02/Per-Texel-Light/
 tags:

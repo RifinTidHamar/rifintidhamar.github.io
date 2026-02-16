@@ -1,5 +1,5 @@
 ---
-title: 'Technical Flimsy Paper (Incomplete)'
+title: 'Technical Flimsy Paper (not-started)'
 date: 2026-01-16
 permalink: /posts/2026/01/flimsy-paper/
 tags:
