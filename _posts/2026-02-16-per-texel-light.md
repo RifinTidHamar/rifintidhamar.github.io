@@ -111,15 +111,275 @@ Technical
 =====
 -----
 
-Alright so now you hopefully have a good idea of some critical concepts used in my lighting. Next we are gonna be going over the compute shader code, which will allow you to fully piece together the concepts above. We will also dive a little deeper into some math--so gird your loins. To download the unity project and see the c# side, check my [github](https://github.com/RifinTidHamar/Shadow-and-Light), although I will give a short summary of the c# side below. 
+Alright so now you hopefully have a good idea of some critical concepts used in my lighting. In this section, we are gonna be mostly going over the compute shader code, which will allow you to fully piece together the concepts above. We will also dive a little deeper into some math--so gird your loins. To download the unity project and see the c# side, check my [github](https://github.com/RifinTidHamar/Shadow-and-Light), although I will give a short summary of the c# below. 
 
-c#
+c# summary
 ====
  1. initialize all variables, including important structs and textures
  1. populate those structs with initial values (for example the triangle info of the mesh)
  1. fill buffers to be used in the compute shader
- 1. Dispatch the uvToWorld kernel, which 
+ 1. Dispatch the **UvToWorld** kernel, which takes all texels of the mesh and finds their position in world space
+ 1. Dispatch the **DynamicLight** kernel for baked lighting
+ 1. for every frame
+    * dispatch the **DynamicLight** kernel for real time lighting
+    * dispatch the **Apply** kernel, which combines the baked and real time lighting into one texture 
+
+Compute Shader Variables and structs
+=====
+```cuda
+struct MeshTriangle
+{
+    float3 p1WPos;
+    float2 p1Uv;
+    float3 p2WPos;
+    float2 p2Uv;
+    float3 p3WPos;
+    float2 p3Uv;
+    float3 normal;
+    float3 tangent;
+    float3 binormal;
+};
+
+struct CSLight
+{
+    int shadowType;
+    float3 loc;
+    float4 color;
+    float range;
+    float intensity;
+    float blurMultiplier;
+    float blurPower;
+};
+
+struct usedUV
+{
+    float3 worldLoc;
+    float3 normal;
+    float3 geoNormal;
+    int used;
+    float lit;
+};
+
+StructuredBuffer<MeshTriangle> triangles;
+StructuredBuffer<CSLight> lights;
+RWStructuredBuffer<usedUV> usedUVs;
+StructuredBuffer<int> numLights;
+
+//finalResult of a dispatch (can be the actual final result, or real time lighting, 
+//or baked lighting depending on usage) 
+RWTexture2D<float4> totalResult; 
+
+//real time light texture used for combining in final apply
+RWTexture2D<float4> RlTLight; 
+//baked light texture used for combining in final apply
+RWTexture2D<float4> BLight; 
+//normal map
+RWTexture2D<float4> nm; 
+
+int numTriangles;
+int texRes;
+static float eps = 0.001;//0.046;
+```
+
+UvToWorld
+====
+```c#
+[numthreads(8,8,1)]
+void UvToWorld (uint3 id : SV_DispatchThreadID)
+{
+  float a;
+  float b;
+  float c;
+  float2 curUV = float2((float)id.x / (float)texRes, (float)id.y / (float)texRes);
+
+  for (int i = 0; i < numTriangles; i++)
+  {
+    float2 p1 = triangles[i].p1Uv;
+    float2 p2 = triangles[i].p2Uv;
+    float2 p3 = triangles[i].p3Uv;
+
+    float denom = (p2.y - p3.y) * (p1.x - p3.x) - (p2.x - p3.x) * (p1.y - p3.y);
+    
+    a = ((p2.y - p3.y) * (curUV.x - p3.x) - (p2.x - p3.x) * (curUV.y - p3.y)) / denom;
+    b = ((p3.y - p1.y) * (curUV.x - p3.x) - (p3.x - p1.x) * (curUV.y - p3.y)) / denom;
+    c = 1 - a - b;
+
+    //inside triangle  
+    if (0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps) 
+    {
+      usedUVs[texRes * id.y + id.x].used = 1;
+
+      float3 wp1 = triangles[i].p1WPos;
+      float3 wp2 = triangles[i].p2WPos;
+      float3 wp3 = triangles[i].p3WPos;
+
+      usedUVs[texRes * id.y + id.x].worldLoc = a * wp1 + b * wp2 + c * wp3;
+      nm[id.xy].g = 1 - nm[id.xy].g;
+      nm[id.xy] = nm[id.xy] *  2 - 1;
+      usedUVs[texRes * id.y + id.x].normal = 
+          triangles[i].normal * nm[id.xy].b
+          + triangles[i].binormal * nm[id.xy].g
+          + triangles[i].tangent * nm[id.xy].r;
+      usedUVs[texRes * id.y + id.x].normal = normalize(usedUVs[texRes * id.y + id.x].normal);
+      usedUVs[texRes * id.y + id.x].geoNormal = triangles[i].normal;
+      break;
+    }
+  }
+}
+```
+
+Dynamic Light
+==========
+```cuda
+[numthreads(8,8,1)]
+void DynamicLight(uint3 id : SV_DispatchThreadID)
+{
+    float4 amb = 0; //float4(0.3/2, 0.15/2, 0.15/2, 1);
+    //totalResult[id.xy] = amb; //ambient light
+
+    int uvInd = texRes * id.y + id.x;
+    usedUVs[uvInd].lit = 1;
+    if (usedUVs[uvInd].used == 1)
+    {
+        for (int i = 0; i < numLights[0]; i++)
+        {
+            float4 threadUnlit = 0;
+            float4 threadShad = 0;
+            float3 locMinusLight = usedUVs[uvInd].worldLoc - lights[i].loc;
+            float3 uvWPos = usedUVs[texRes * id.y + id.x].worldLoc;
+            float distUVtoLight = length(locMinusLight);
+            float3 lightVec = normalize(locMinusLight);
+            float angleBetweenLightAndLocWNormalMap = dot(lightVec, usedUVs[uvInd].normal);
+            float angleBetweenLightAndLocGeo = dot(lightVec, usedUVs[uvInd].geoNormal);
+            if (distUVtoLight < lights[i].range && angleBetweenLightAndLocWNormalMap < 0)
+            {
+                bool shadowHit = false;
+                float distFromLighttoPlane = 0;
+                if (lights[i].shadowType > 0)
+                {
+                    float minDistUVtoInter = 0;
+                    float maxDistUVtoInter = 0;
+                    for (int j = 0; j < numTriangles; j++)
+                    {
+                        //see if plane and lightVec are opposite
+                        float parallelDot = dot(lightVec, triangles[j].normal); 
+
+                        // if they are not, and not parallel, then they intersect
+                        if (abs(parallelDot) >= 0) 
+                        {
+                            //https://www.youtube.com/watch?v=x_SEyKtCBPU
+                            distFromLighttoPlane = 
+                              dot(triangles[j].p3WPos - lights[i].loc, triangles[j].normal) 
+                              / parallelDot; 
+                        
+                            if (distFromLighttoPlane >= distUVtoLight - eps)
+                                continue;
+
+                            float3 intersection = lights[i].loc + (distFromLighttoPlane * lightVec);
+
+                            if (checkIntersectionInTri(intersection, triangles[j]))
+                            {
+                                shadowHit = true;
+                                threadShad = 1;
+                                if(lights[i].shadowType == 2)
+                                {
+                                    float distFromInterToUV = length(intersection - uvWPos);
+      
+                                    //this should be changed to only have blurring process 
+                                    //take place if the mindDist is changed. 
+                                    //That way it's not done every loop. 
+                                    if (minDistUVtoInter != 0)
+                                    {
+                                        minDistUVtoInter = min(distFromInterToUV, minDistUVtoInter);
+                                        maxDistUVtoInter = max(distFromInterToUV, maxDistUVtoInter);
+                                    }
+                                    else
+                                    {
+                                        minDistUVtoInter = distFromInterToUV;
+                                        // investigate how this could be used
+                                        maxDistUVtoInter = distFromInterToUV;
+                                    }
+                                        
+                                    float blurAmount = (minDistUVtoInter / distUVtoLight);
+                                    blurAmount = pow(blurAmount, lights[i].blurPower);
+                                    blurAmount *= lights[i].blurMultiplier;
+                                
+                                    threadShad -= blurAmount;
+                                    threadShad = clamp(threadShad, 0, 1);
+                                }
+                                else
+                                    // we need to go through every triangle for the dynamic blur since
+                                    //it is based off the nearest triangle depth, and the first triangle 
+                                    //in the loop may not be the nearest. However for solid shadow, 
+                                    //that's not necessary, so we can break the loop as soon as we find
+                                    //a triangle that shades the texel
+                                    break;
+                            }
+                        }
+                    }
+                }
+                if (angleBetweenLightAndLocWNormalMap < 0)
+                {
+                    float4 val = 
+                      (1 - distUVtoLight / lights[i].range) * -1 * angleBetweenLightAndLocWNormalMap;
+                    threadUnlit = 
+                      (1 - threadShad) * val * val 
+                      * usedUVs[uvInd].lit * lights[i].color * lights[i].intensity;
+                }
+            }
+            totalResult[id.xy] += threadUnlit;
+            //totalResult[id.xy] = clamp(totalResult[id.xy], 0, 1);
+        }
+    }
+}
+```
+```cuda
+bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
+{
+    //real time collision textbook section 3.4
+                            
+    float3 p1 = tri.p1WPos;
+    float3 p2 = tri.p2WPos;
+    float3 p3 = tri.p3WPos;
+
+    float3 v0 = p2 - p1;
+    float3 v1 = p3 - p1;
+    float3 v2 = inters - p1;
+
+    float d00 = dot(v0, v0);
+    float d01 = dot(v0, v1); //dot is shorthand for v0.x * v1.x + v0.y * v1.y + v0.z * v1.z
+    float d11 = dot(v1, v1);
+    float d20 = dot(v2, v0);
+    float d21 = dot(v2, v1);
+
+    float denom = d00 * d11 - d01 * d01;
+
+    float a = (d11 * d20 - d01 * d21) / denom;
+    float b = (d00 * d21 - d01 * d20) / denom;
+    float c = 1.0f - a - b;
+    
+    return 0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps;
+}
+```
+
+Apply
+=====
+```cuda
+[numthreads(8, 8, 1)]
+void Apply(uint3 id : SV_DispatchThreadID)
+{
+    float4 totCol = RlTLight[id.xy] + BLight[id.xy];
+    totCol = saturate(totCol);
+    totalResult[id.xy] = totCol;
+    RlTLight[id.xy] = 0;
+}
+```
 
 Improvements and Optimizations
 ====
 ----
+  1. Allow for multiple meshes
+  1. BSP
+  1. LOD textures and mesh 
+  1. allow for lighting to work in editor
+  1. changing lighting while in play mode should effect lighting in editor
