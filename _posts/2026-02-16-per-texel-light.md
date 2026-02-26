@@ -10,7 +10,7 @@ Do you want to emulate older 3D games but with a new touch? This might interest 
 
 expected completion: mid-late feb
 
-We will be conceptually and technically breaking down the process of the lighting in this video.
+We will be conceptually and technically breaking down the process of the lighting in this video:
 {% include youtube.html id="Uief5d7zBRc" %}
 
 Conceptual
@@ -111,4 +111,15 @@ Technical
 =====
 -----
 
-Alright so now you hopefully have a good idea of some critical concepts used in my lighting. 
+Alright so now you hopefully have a good idea of some critical concepts used in my lighting. Next we are gonna be going over the compute shader code, which will allow you to fully piece together the concepts above. We will also dive a little deeper into some math--so gird your loins. To download the unity project and see the c# side, check my [github](https://github.com/RifinTidHamar/Shadow-and-Light), although I will give a short summary of the c# side below. 
+
+c#
+====
+ 1. initialize all variables, including important structs and textures
+ 1. populate those structs with initial values (for example the triangle info of the mesh)
+ 1. fill buffers to be used in the compute shader
+ 1. Dispatch the uvToWorld kernel, which 
+
+Improvements and Optimizations
+====
+----
