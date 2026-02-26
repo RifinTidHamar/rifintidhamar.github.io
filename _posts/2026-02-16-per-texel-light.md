@@ -115,14 +115,16 @@ Alright so now you hopefully have a good idea of some critical concepts used in 
 
 c# summary
 ====
- 1. initialize all variables, including important structs and textures
- 1. populate those structs with initial values (for example the triangle info of the mesh)
- 1. fill buffers to be used in the compute shader
- 1. Dispatch the **UvToWorld** kernel, which takes all texels of the mesh and finds their position in world space
- 1. Dispatch the **DynamicLight** kernel for baked lighting
- 1. for every frame
+* on the intial frame
+    * initialize all variables, including important structs and textures
+    * populate those structs with initial values (for example the triangle info of the mesh)
+    * fill buffers to be used in the compute shader
+    * Dispatch the **UvToWorld** kernel, which takes all texels of the mesh and finds their position in world space
+    * Dispatch the **DynamicLight** kernel for baked lighting
+* for every update frame
+    * update arrays and buffers based off for real time lights
     * dispatch the **DynamicLight** kernel for real time lighting
-    * dispatch the **Apply** kernel, which combines the baked and real time lighting into one texture 
+    * dispatch the **Apply** kernel, which combines tshe baked and real time lighting into one texture 
 
 Compute Shader Variables and structs
 =====
