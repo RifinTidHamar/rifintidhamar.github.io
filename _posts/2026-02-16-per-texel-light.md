@@ -183,7 +183,7 @@ static float eps = 0.001;//0.046;
 
 UvToWorld
 ====
-```c#
+```cuda
 [numthreads(8,8,1)]
 void UvToWorld (uint3 id : SV_DispatchThreadID)
 {
@@ -285,9 +285,9 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                                 {
                                     float distFromInterToUV = length(intersection - uvWPos);
       
-                                    //this should be changed to only have blurring process 
-                                    //take place if the mindDist is changed. 
-                                    //That way it's not done every loop. 
+                                    //this should be changed to only have blurring process
+                                    //take place if the mindDist is changed.
+                                    //That way it's not done every loop.
                                     if (minDistUVtoInter != 0)
                                     {
                                         minDistUVtoInter = min(distFromInterToUV, minDistUVtoInter);
@@ -308,11 +308,12 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                                     threadShad = clamp(threadShad, 0, 1);
                                 }
                                 else
-                                    // we need to go through every triangle for the dynamic blur since
-                                    //it is based off the nearest triangle depth, and the first triangle 
-                                    //in the loop may not be the nearest. However for solid shadow, 
-                                    //that's not necessary, so we can break the loop as soon as we find
-                                    //a triangle that shades the texel
+                                    // we need to go through every triangle for the dynamic 
+                                    //blur since it is based off the nearest triangle depth,
+                                    //and the first triangle in the loop may not be the nearest. 
+                                    //However for solid shadow, that's not necessary, 
+                                    //so we can break the loop as soon as we find a triangle
+                                    //that shades the texel
                                     break;
                             }
                         }
@@ -358,7 +359,8 @@ bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
     float b = (d00 * d21 - d01 * d20) / denom;
     float c = 1.0f - a - b;
     
-    return 0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps;
+    return 
+      0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps;
 }
 ```
 
