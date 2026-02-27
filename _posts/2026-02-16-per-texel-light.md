@@ -186,7 +186,7 @@ static float eps = 0.001;//0.046;
 
 Checking intersection using Barrycentric coordinates
 =====
-This is a method of the compute shader, not a kernel. It is used later in the code, but we are gonna discuss it first because I wrote it and I can do it if I want. Also, it so happens that it's useful to help explain an idea used in other parts of the code, but mostly I just wanna do what I want. So take a look at the code, and then we're gonna go over math, and then we'll apply that math to the code. 
+Rather than a kernel, this next section is a method used in a kernel. The method returns true or false depending on if a given point, *inters* is inside of a given triangle, *tri*. While for most of the technical section I'll be going over code chronologically, this method is actually used later in the program. We're gonna discuss it now because I wrote it and I can do it if I want. Also, it so happens that it's useful to help explain an idea used in other parts of the code, but mostly I just wanna do what I want. So take a look at the code, and then we're gonna go over math, and then we'll apply that math to the code. 
 ```cuda
 bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
 {
@@ -201,7 +201,7 @@ bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
     float3 v2 = inters - p1;
 
     float d00 = dot(v0, v0);
-    float d01 = dot(v0, v1); //dot is shorthand for v0.x * v1.x + v0.y * v1.y + v0.z * v1.z
+    float d01 = dot(v0, v1);
     float d11 = dot(v1, v1);
     float d20 = dot(v2, v0);
     float d21 = dot(v2, v1);
@@ -216,38 +216,105 @@ bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
       0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps;
 }
 ```
-mmk, the purpose of barrycentric coordinates is to find the position of some point relative to a triangle. Often, the method is useful to see if a point lies within some triangle. 
+Mmmk, the purpose of barrycentric coordinates is to find the position of some point relative to a triangle. Often, the method is useful to see if a point lies within some triangle. 
 
-*P = P1 + v(P2 - P1) + w(P3 - P1)*
+Look at this function:
 
-That function there represents the conceptual idea from uvToWorld section above. Basically, a point can be represented entirely by a triangle, with P1, P2, P3 as the vertices. The origin is P1, and then we find how much the point is on the axis of "P2 to P1": [*v(P2 - P1)*] and how much it is on the axis of "P3 to P1": [*w(P3 - P1)*]. And we choose that those axis' each have a length of 1. 
+$$
+P = P_1 + v(P_2 - P_1) + w(P_3 - P_1)
+$$
 
-Now we have some functional basis. Our goal is to solve for v and w, which are the coordinates of this triangle-relative-position. Here is an overview of how we will do that.
+That function there represents the conceptual idea from the "UV space to World space" section above. Basically, a point, \\(P\\), can be represented entirely by a triangle, with \\(P_1, P_2, P_3\\) as the vertices. We decide that the origin is \\(P_1\\), and then we find how far up the \\(P\\) is on the axis of "P2 to P1" AKA \\(v(P_2 - P_1)\\) and how far up \\(P\\) is on the axis of "P3 to P1" AKA \\(w(P_3 - P_1)\\). And we choose that those axis' each have a length of 1.
 
-1. turn the function above into a system of equations
-1. use cramer's rule to solve the system
+Now we have some functional basis. Our goal is to solve for \\(v\\) and \\(w\\), which are the coordinates of this triangle-relative-position (like \\(x\\) and \\(y\\) on a normal graph). Here is an overview of how we will do that.
 
-To turn the function above into a system of equations, we need to somehow get all scalar values, not vector values. At least one way to do that is with the dot product. But first, let's make our equation look a little nicer. *P2 - P1* and *P3 - P1* are really just a vectors, so we'll instead call them *V0*, and *V1* respectively. Which gives us the function:
+1. turn the function above into a system of equations  
+2. use cramer's rule to solve the system
 
-*P = P1 + v(V0) + w(V1)*
+To turn the function into a system of equations, we need to somehow get all scalar values, not position/vector values. At least one way to do that is with the dot product. But first, let's make our equation look a little nicer. \\(P_2 - P_1\\) and \\(P_3 - P_1\\) are really just vectors, so we'll instead call them \\(V_0\\) and \\(V_1\\) respectively. Which gives us the new-looking function:
 
-let's go one step further and subtract *P1* on both sides:
+$$
+P = P_1 + v(V_0) + w(V_1)
+$$
 
-*P - P1 = v(V0) + w(V1)*
+Let's go one step further and subtract \\(P_1\\) on both sides:
 
-which allows us to make another vector out of *P - P1* which we'll call *V2*:
+$$
+P - P_1 = v(V_0) + w(V_1)
+$$
 
-*V2 = v(V0) + w(V1)*
+Which allows us to make another vector out of \\(P - P_1\\) which we'll call \\(V_2\\):
 
-Alright, now let's turn this into a system of equations with the help of the dot product
+$$
+V_2 = v(V_0) + w(V_1)
+$$
 
-*V2 ⋅ V0 = V0 ⋅ (v(V0) + w(V1))* \
-*V2 ⋅ V1 = V1 ⋅ (v(V0) + w(V1))*
+Alright, now let's turn this into a system of equations with the help of the dot product (since the dot product of two vectors is a scalar, which is required for a system of equation):
 
-Then distribute the dot product, so that the equations are more common looking. That will allows us to easier use cramer's rule
+$$
+V_2 \cdot V_0 = V_0 \cdot (v(V_0) + w(V_1))
+$$
 
-*V2 ⋅ V0 = v(V0 ⋅ V0) + w(V1 ⋅ V0)* \
-*V2 ⋅ V1 = v(V0 ⋅ V1) + w(V1 ⋅ V1)*
+$$
+V_2 \cdot V_1 = V_1 \cdot (v(V_0) + w(V_1))
+$$
+
+Then distribute the dot product, so that the equations are more common looking. That will allows us to easier use cramer's rule on the next step:
+
+$$
+V_2 \cdot V_0 = v(V_0 \cdot V_0) + w(V_1 \cdot V_0)
+$$
+
+$$
+V_2 \cdot V_1 = v(V_0 \cdot V_1) + w(V_1 \cdot V_1)
+$$
+
+Ok so if you don't know, Cramer's rule just gives us a nice way to solve system of equations with Matrices. The first step of Cramer's rule is to derive three different matrices from the system of equations. 1. the solution matrix, \\(X\\): made of the variables (\\(x\\) and \\(y\\) in a normal system of equations, \\(v\\) and \\(w\\) in ours) 2. the coefficient matrix, \\(A\\): made of the coefficients to the variables 3. the constant matrix, \\(B\\): made of the constants... duh! 
+
+$$
+X = \begin{bmatrix}
+v \\
+w
+\end{bmatrix}
+\quad
+A = \begin{bmatrix}
+V_0 \cdot V_0 & V_1 \cdot V_0 \\
+V_0 \cdot V_1 & V_1 \cdot V_1
+\end{bmatrix}
+\quad
+B = \begin{bmatrix}
+V_2 \cdot V_0 \\
+V_2 \cdot V_1
+\end{bmatrix}
+$$
+
+Now before we go on, I want to make something perfectly clear. This is my first time making a matrix on a computer screen like that. That's pretty cool.
+
+The 2nd and last step in Cramer's rule is to divide some determinants. Let me show the step first, then explain it a little more after.
+
+$$
+v = \frac{\begin{vmatrix}
+V_2 \cdot V_0 & V_1 \cdot V_0 \\
+V_2 \cdot V_1 & V_1 \cdot V_1
+\end{vmatrix}}
+{\begin{vmatrix}
+V_0 \cdot V_0 & V_1 \cdot V_0 \\
+V_0 \cdot V_1 & V_1 \cdot V_1
+\end{vmatrix}}
+\quad
+w = \frac{\begin{vmatrix}
+V_0 \cdot V_0 & V_2 \cdot V_0 \\
+V_0 \cdot V_1 & V_2 \cdot V_1
+\end{vmatrix}}
+{\begin{vmatrix}
+V_0 \cdot V_0 & V_1 \cdot V_0 \\
+V_0 \cdot V_1 & V_1 \cdot V_1
+\end{vmatrix}}
+$$ 
+
+For \\(v\\), the numerator is \\(A\\), but with the first column replaced by \\(B\\). For \\(w\\), the numerator is \\(A\\), but with the second column replaced by \\(B\\). The denominator in both cases is just \\(A\\). I'm not gonna go over why specifically these matrices-we-are-taking-determinants-of are formed the way they are, but I will just say if you were to solve the system of equations in a more "highschool" way, you would see that Cramer's rule is the same process. It just looks more concise. 
+
+Lastly, Im just gonna explain how to get a determinant value from a 2X2 matrix. 
 
 UvToWorld Kernel
 ====
