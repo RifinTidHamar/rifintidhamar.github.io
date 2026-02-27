@@ -128,6 +128,7 @@ c# summary
 
 Compute Shader Variables and structs
 =====
+Like the name implies, these are my variables. There isn't much to say, but it might be useful to revisit the structs as you are going through the other parts of the code.
 ```cuda
 struct MeshTriangle
 {
@@ -144,7 +145,7 @@ struct MeshTriangle
 
 struct CSLight
 {
-    int shadowType;
+    int shadowType;//0=lit,1=hardShadow,2=dynamicShadow
     float3 loc;
     float4 color;
     float range;
@@ -157,9 +158,9 @@ struct usedUV
 {
     float3 worldLoc;
     float3 normal;
-    float3 geoNormal;
-    int used;
-    float lit;
+    float3 geoNormal;//normal only with respect to geometry
+    int used;//is this UV actually on a triangle
+    int lit;//is this UV reached by some light
 };
 
 StructuredBuffer<MeshTriangle> triangles;
@@ -183,7 +184,72 @@ int texRes;
 static float eps = 0.001;//0.046;
 ```
 
-UvToWorld
+Checking intersection using Barrycentric coordinates
+=====
+This is a method of the compute shader, not a kernel. It is used later in the code, but we are gonna discuss it first because I wrote it and I can do it if I want. Also, it so happens that it's useful to help explain an idea used in other parts of the code, but mostly I just wanna do what I want. So take a look at the code, and then we're gonna go over math, and then we'll apply that math to the code. 
+```cuda
+bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
+{
+    //real time collision textbook section 3.4
+                            
+    float3 p1 = tri.p1WPos;
+    float3 p2 = tri.p2WPos;
+    float3 p3 = tri.p3WPos;
+
+    float3 v0 = p2 - p1;
+    float3 v1 = p3 - p1;
+    float3 v2 = inters - p1;
+
+    float d00 = dot(v0, v0);
+    float d01 = dot(v0, v1); //dot is shorthand for v0.x * v1.x + v0.y * v1.y + v0.z * v1.z
+    float d11 = dot(v1, v1);
+    float d20 = dot(v2, v0);
+    float d21 = dot(v2, v1);
+
+    float denom = d00 * d11 - d01 * d01;
+
+    float a = (d11 * d20 - d01 * d21) / denom;
+    float b = (d00 * d21 - d01 * d20) / denom;
+    float c = 1.0f - a - b;
+    
+    return 
+      0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps;
+}
+```
+mmk, the purpose of barrycentric coordinates is to find the position of some point relative to a triangle. Often, the method is useful to see if a point lies within some triangle. 
+
+*P = P1 + v(P2 - P1) + w(P3 - P1)*
+
+That function there represents the conceptual idea from uvToWorld section above. Basically, a point can be represented entirely by a triangle, with P1, P2, P3 as the vertices. The origin is P1, and then we find how much the point is on the axis of "P2 to P1": [*v(P2 - P1)*] and how much it is on the axis of "P3 to P1": [*w(P3 - P1)*]. And we choose that those axis' each have a length of 1. 
+
+Now we have some functional basis. Our goal is to solve for v and w, which are the coordinates of this triangle-relative-position. Here is an overview of how we will do that.
+
+1. turn the function above into a system of equations
+1. use cramer's rule to solve the system
+
+To turn the function above into a system of equations, we need to somehow get all scalar values, not vector values. At least one way to do that is with the dot product. But first, let's make our equation look a little nicer. *P2 - P1* and *P3 - P1* are really just a vectors, so we'll instead call them *V0*, and *V1* respectively. Which gives us the function:
+
+*P = P1 + v(V0) + w(V1)*
+
+let's go one step further and subtract *P1* on both sides:
+
+*P - P1 = v(V0) + w(V1)*
+
+which allows us to make another vector out of *P - P1* which we'll call *V2*:
+
+*V2 = v(V0) + w(V1)*
+
+Alright, now let's turn this into a system of equations with the help of the dot product
+
+*V2 ⋅ V0 = V0 ⋅ (v(V0) + w(V1))* \
+*V2 ⋅ V1 = V1 ⋅ (v(V0) + w(V1))*
+
+Then distribute the dot product, so that the equations are more common looking. That will allows us to easier use cramer's rule
+
+*V2 ⋅ V0 = v(V0 ⋅ V0) + w(V1 ⋅ V0)* \
+*V2 ⋅ V1 = v(V0 ⋅ V1) + w(V1 ⋅ V1)*
+
+UvToWorld Kernel
 ====
 ```cuda
 [numthreads(8,8,1)]
@@ -230,7 +296,7 @@ void UvToWorld (uint3 id : SV_DispatchThreadID)
 }
 ```
 
-Dynamic Light
+Dynamic Light Kernel
 ==========
 ```cuda
 [numthreads(8,8,1)]
@@ -327,7 +393,7 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                       (1 - distUVtoLight / lights[i].range) * -1 * angleBetweenLightAndLocWNormalMap;
                     threadUnlit = 
                       (1 - threadShad) * val * val 
-                      * usedUVs[uvInd].lit * lights[i].color * lights[i].intensity;
+                      * (float)usedUVs[uvInd].lit * lights[i].color * lights[i].intensity;
                 }
             }
             totalResult[id.xy] += threadUnlit;
@@ -336,37 +402,8 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
     }
 }
 ```
-```cuda
-bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
-{
-    //real time collision textbook section 3.4
-                            
-    float3 p1 = tri.p1WPos;
-    float3 p2 = tri.p2WPos;
-    float3 p3 = tri.p3WPos;
 
-    float3 v0 = p2 - p1;
-    float3 v1 = p3 - p1;
-    float3 v2 = inters - p1;
-
-    float d00 = dot(v0, v0);
-    float d01 = dot(v0, v1); //dot is shorthand for v0.x * v1.x + v0.y * v1.y + v0.z * v1.z
-    float d11 = dot(v1, v1);
-    float d20 = dot(v2, v0);
-    float d21 = dot(v2, v1);
-
-    float denom = d00 * d11 - d01 * d01;
-
-    float a = (d11 * d20 - d01 * d21) / denom;
-    float b = (d00 * d21 - d01 * d20) / denom;
-    float c = 1.0f - a - b;
-    
-    return 
-      0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps;
-}
-```
-
-Apply
+Apply Kernel
 =====
 ```cuda
 [numthreads(8, 8, 1)]
