@@ -186,7 +186,7 @@ static float eps = 0.001;//0.046;
 
 Checking intersection using Barrycentric coordinates
 =====
-Rather than a kernel, this next section is a method used in a kernel. The method returns true or false depending on if a given point, *inters* is inside of a given triangle, *tri*. While for most of the technical section I'll be going over code chronologically, this method is actually used later in the program. We're gonna discuss it now because I wrote it and I can do it if I want. Also, it so happens that it's useful to help explain an idea used in other parts of the code, but mostly I just wanna do what I want. So take a look at the code, and then we're gonna go over math, and then we'll apply that math to the code. 
+Rather than a kernel, this next section is a method used in a kernel. The method returns true or false depending on if a given point, *inters* is inside of a given triangle, *tri*. While for most of the technical section I'll be going over code chronologically, this method is actually used later in the program. We're gonna discuss it now because I wrote it and I can do it if I want. Also, it so happens that it's useful to help explain an idea used in other parts of the code, but mostly I just wanna do what I want. So take a look at the code, and then we're gonna go over math, and then we'll very quickly match that math to the code. 
 ```cuda
 bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
 {
@@ -210,12 +210,12 @@ bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
 
     float a = (d11 * d20 - d01 * d21) / denom;
     float b = (d00 * d21 - d01 * d20) / denom;
-    float c = 1.0f - a - b;
     
-    return 
-      0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps;
+    return 0 - eps <= a && 0 - eps <= b && a + b <= 1 + eps;
 }
 ```
+The ideas behind the following explanations are found from the "Real Time Collision Detection" textbook by Christer Ericson (who helped make "God of War" among other things). The wording and explanation is my own, and it is arranged differently than Ericson, but the ideas are from the book. 
+
 Mmmk, the purpose of barrycentric coordinates is to find the position of some point relative to a triangle. Often, the method is useful to see if a point lies within some triangle. 
 
 Look at this function:
@@ -224,9 +224,9 @@ $$
 P = P_1 + v(P_2 - P_1) + w(P_3 - P_1)
 $$
 
-That function there represents the conceptual idea from the "UV space to World space" section above. Basically, a point, \\(P\\), can be represented entirely by a triangle, with \\(P_1, P_2, P_3\\) as the vertices. We decide that the origin is \\(P_1\\), and then we find how far up the \\(P\\) is on the axis of "P2 to P1" AKA \\(v(P_2 - P_1)\\) and how far up \\(P\\) is on the axis of "P3 to P1" AKA \\(w(P_3 - P_1)\\). And we choose that those axis' each have a length of 1.
+That function there represents the conceptual idea from the "UV space to World space" section above. Basically, a point, \\(P\\), can be represented entirely by a triangle, with \\(P_1, P_2, P_3\\) as the vertices. We decide that the origin is \\(P_1\\), and then we find how far up \\(P\\) is on the axis of "P2 to P1" AKA \\(v(P_2 - P_1)\\) and how far up \\(P\\) is on the axis of "P3 to P1" AKA \\(w(P_3 - P_1)\\). Keep in mind that we choose that those axis' each have a length of 1.
 
-Now we have some functional basis. Our goal is to solve for \\(v\\) and \\(w\\), which are the coordinates of this triangle-relative-position (like \\(x\\) and \\(y\\) on a normal graph). Here is an overview of how we will do that.
+Now we have some functional basis. Our goal is to solve for \\(v\\) and \\(w\\), which are the coordinates names of this triangle-relative-position (like \\(x\\) and \\(y\\) on a standard graph). Here is an overview of how we will do that.
 
 1. turn the function above into a system of equations  
 2. use cramer's rule to solve the system
@@ -249,7 +249,7 @@ $$
 V_2 = v(V_0) + w(V_1)
 $$
 
-Alright, now let's turn this into a system of equations with the help of the dot product (since the dot product of two vectors is a scalar, which is required for a system of equation):
+Alright, now let's turn this into a system of equations with the help of the dot product (since the dot product of two vectors is a scalar, which is required for a system of equations):
 
 $$
 V_2 \cdot V_0 = V_0 \cdot (v(V_0) + w(V_1))
@@ -269,7 +269,7 @@ $$
 V_2 \cdot V_1 = v(V_0 \cdot V_1) + w(V_1 \cdot V_1)
 $$
 
-Ok so if you don't know, Cramer's rule just gives us a nice way to solve system of equations with Matrices. The first step of Cramer's rule is to derive three different matrices from the system of equations. 1. the solution matrix, \\(X\\): made of the variables (\\(x\\) and \\(y\\) in a normal system of equations, \\(v\\) and \\(w\\) in ours) 2. the coefficient matrix, \\(A\\): made of the coefficients to the variables 3. the constant matrix, \\(B\\): made of the constants... duh! 
+Ok so if you don't know, Cramer's rule just gives us a nice way to solve systems of equations with Matrices. The first step of Cramer's rule is to derive three different matrices from the system of equations. 1. the solution matrix, \\(X\\): made of the variables (\\(x\\) and \\(y\\) in a normal system of equations, \\(v\\) and \\(w\\) in ours) 2. the coefficient matrix, \\(A\\): made of the coefficients to the variables 3. the constant matrix, \\(B\\): made of the constants... duh! 
 
 $$
 X = \begin{bmatrix}
@@ -314,7 +314,102 @@ $$
 
 For \\(v\\), the numerator is \\(A\\), but with the first column replaced by \\(B\\). For \\(w\\), the numerator is \\(A\\), but with the second column replaced by \\(B\\). The denominator in both cases is just \\(A\\). I'm not gonna go over why specifically these matrices-we-are-taking-determinants-of are formed the way they are, but I will just say if you were to solve the system of equations in a more "highschool" way, you would see that Cramer's rule is the same process. It just looks more concise. 
 
-Lastly, Im just gonna explain how to get a determinant value from a 2X2 matrix. 
+Im gonna explain how to get a determinant value from a 2X2 matrix. Say you have have a Matrix \\(A\\). Now say...
+
+$$ A = 
+{\begin{bmatrix}
+x & y \\
+z & w
+\end{bmatrix}}
+$$
+
+So then the determinant of \\(A\\) is...
+
+$$
+{\begin{vmatrix}A\end{vmatrix}} = 
+{\begin{vmatrix}
+x & y \\
+z & w
+\end{vmatrix}} = x * w - y * z
+$$
+
+I won't lay out all the determinants, but just for example, I will layout the denominator determinant for \\(v\\) and \\(w\\).
+
+$$
+{\begin{vmatrix}
+V_0 \cdot V_0 & V_1 \cdot V_0 \\
+V_0 \cdot V_1 & V_1 \cdot V_1
+\end{vmatrix}}
+=
+V_0 \cdot V_0 * V_1 \cdot V_1 - V_1 \cdot V_0 * V_0 \cdot V_1
+$$
+
+Notice how this equals the `denom` variable from the code above (keeping in mind that dot products are commutative). Then, once you've done a similar process for the other determinants, you'll notice that the numerators of `a` and `b` are equal to the numerators of \\(v\\) and \\(w\\) respectively.
+
+From there it becomes easy to backtrack how the other variables are formed. The last thing to discuss here is the return boolean:
+
+```cuda 
+return 0 - eps <= a && 0 - eps <= b && a + b <= 1 + eps;
+```
+first off, `eps` is just short for epsilon. It is simply a very small value used to give leniency to calculations. 
+
+`a` and `b` tell us a point's position relative to a triangle, but what we really want to know is if the point is inside or outside the triangle. Take a look at this picture again. 
+
+<img src="\images\lightScene\barryCentric\graphTri.png">
+
+Right off the bat, we can deduce that any point within the triangle, must at least have positive coordinates, seeing as how the blue and green coordinates are only positive inside the triangle. Therefore the first two terms of the return boolean consider if `a` and `b` are greater than or equal to zero. 
+
+Now as for the last term, `a + b <= 1`, take a look at the picture below. It is another triangle, similar to the last but with a different shape. Hover your mouse over the white line, and see if you notice anything about the displayed points.  
+
+```plotly
+  {
+  "data": [
+    {
+      "x": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+      "y": [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0],
+      "type": "scatter",
+      "mode": "lines",
+      "line": {
+        "color": "white",
+        "width": 3
+      },
+      "hovertemplate": "v: %{x}<br>w: %{y}<extra></extra>"
+    }
+  ],
+  "layout": {
+    "xaxis": { "range": [-0.1, 1.1] },
+    "yaxis": { "range": [-0.1, 1.1] },
+    "shapes": [
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 0,
+        "y0": 0,
+        "y1": 1,
+        "line": {
+          "color": "rgb(129, 114, 255)",
+          "width": 3
+        }
+      },
+      {
+        "type": "line",
+        "x0": 0,
+        "x1": 1,
+        "y0": 0,
+        "y1": 0,
+        "line": {
+          "color": "rgb(26, 214, 55)",
+          "width": 3
+        }
+      }
+    ]
+  }
+}
+```
+
+You will notice that always \\(v + w = 1\\) along the white border line. And since we have set our blue and green axis' to always have length 1 (even if they don't appear so) we know this will always be true. So we can see that, on top of `a` and `b` being positive this also must be true: `a + b <= 1` (well we can see a lot of things actually. For example if we look down, we can see our legs.)
+
+While there are other ways to show this, for example treating each point as a metaphorical weight, this explanation makes most sense to me. 
 
 UvToWorld Kernel
 ====
