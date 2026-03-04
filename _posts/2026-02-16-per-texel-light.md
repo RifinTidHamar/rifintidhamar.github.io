@@ -10,7 +10,7 @@ Do you want to emulate older 3D games but with a new touch? This might interest 
 
 expected completion: mid-late feb
 
-We will be conceptually and technically breaking down the process of the lighting in this video:
+The following article is made for desktop. It will be conceptually and technically breaking down the process of the lighting in this video:
 {% include youtube.html id="Uief5d7zBRc" %}
 
 Conceptual
@@ -208,10 +208,10 @@ bool checkIntersectionInTri(float3 inters, MeshTriangle tri)
 
     float denom = d00 * d11 - d01 * d01;
 
-    float a = (d11 * d20 - d01 * d21) / denom;
-    float b = (d00 * d21 - d01 * d20) / denom;
+    float v = (d11 * d20 - d01 * d21) / denom;
+    float w = (d00 * d21 - d01 * d20) / denom;
     
-    return 0 - eps <= a && 0 - eps <= b && a + b <= 1 + eps;
+    return 0 - eps <= v && 0 - eps <= w && v + w <= 1 + eps;
 }
 ```
 The ideas behind the following explanations are found from the "Real Time Collision Detection" textbook by Christer Ericson (who helped make "God of War" among other things). The wording and explanation is my own, and it is arranged differently than Ericson, but the ideas are from the book. 
@@ -226,7 +226,7 @@ $$
 
 That function there represents the conceptual idea from the "UV space to World space" section above. Basically, a point, \\(P\\), can be represented entirely by a triangle, with \\(P_1, P_2, P_3\\) as the vertices. We decide that the origin is \\(P_1\\), and then we find how far up \\(P\\) is on the axis of "P2 to P1" AKA \\(v(P_2 - P_1)\\) and how far up \\(P\\) is on the axis of "P3 to P1" AKA \\(w(P_3 - P_1)\\). Keep in mind that we choose that those axis' each have a length of 1.
 
-Now we have some functional basis. Our goal is to solve for \\(v\\) and \\(w\\), which are the coordinates names of this triangle-relative-position (like \\(x\\) and \\(y\\) on a standard graph). Here is an overview of how we will do that.
+Now that we have some functional basis, our goal is to solve for \\(v\\) and \\(w\\), which are the coordinate names of this triangle-relative-position (like \\(x\\) and \\(y\\) on a standard graph). Here is an overview of how we will do that.
 
 1. turn the function above into a system of equations  
 2. use cramer's rule to solve the system
@@ -344,22 +344,22 @@ V_0 \cdot V_1 & V_1 \cdot V_1
 V_0 \cdot V_0 * V_1 \cdot V_1 - V_1 \cdot V_0 * V_0 \cdot V_1
 $$
 
-Notice how this equals the `denom` variable from the code above (keeping in mind that dot products are commutative). Then, once you've done a similar process for the other determinants, you'll notice that the numerators of `a` and `b` are equal to the numerators of \\(v\\) and \\(w\\) respectively.
+Notice how this equals the `denom` variable from the code above (keeping in mind that dot products are commutative). Then, once you've done a similar process for the other determinants, you'll notice that the numerators of `v` and `w` are equal to the numerators of \\(v\\) and \\(w\\) respectively.
 
 From there it becomes easy to backtrack how the other variables are formed. The last thing to discuss here is the return boolean:
 
 ```cuda 
-return 0 - eps <= a && 0 - eps <= b && a + b <= 1 + eps;
+return 0 - eps <= v && 0 - eps <= w && v + w <= 1 + eps;
 ```
 first off, `eps` is just short for epsilon. It is simply a very small value used to give leniency to calculations. 
 
-`a` and `b` tell us a point's position relative to a triangle, but what we really want to know is if the point is inside or outside the triangle. Take a look at this picture again. 
+`v` and `w` tell us a point's position relative to a triangle, but what we really want to know is if the point is inside or outside the triangle. Take a look at this picture again. 
 
 <img src="\images\lightScene\barryCentric\graphTri.png">
 
-Right off the bat, we can deduce that any point within the triangle, must at least have positive coordinates, seeing as how the blue and green coordinates are only positive inside the triangle. Therefore the first two terms of the return boolean consider if `a` and `b` are greater than or equal to zero. 
+Right off the bat, we can deduce that any point within the triangle, must at least have positive coordinates, seeing as how the blue and green coordinates are only positive inside the triangle. Therefore the first two terms of the return boolean consider if `v` and `w` are greater than or equal to zero. 
 
-Now as for the last term, `a + b <= 1`, take a look at the picture below. It is another triangle, similar to the last but with a different shape. Hover your mouse over the white line, and see if you notice anything about the displayed points.  
+Now as for the last term, `v + w <= 1`, take a look at the picture below. It is another triangle, similar to the last but with a different shape. Hover your mouse over the white line, and see if you notice anything about the displayed points (only works on desktop).  
 
 ```plotly
   {
@@ -407,56 +407,78 @@ Now as for the last term, `a + b <= 1`, take a look at the picture below. It is 
 }
 ```
 
-You will notice that always \\(v + w = 1\\) along the white border line. And since we have set our blue and green axis' to always have length 1 (even if they don't appear so) we know this will always be true. So we can see that, on top of `a` and `b` being positive this also must be true: `a + b <= 1` (well we can see a lot of things actually. For example if we look down, we can see our legs.)
+You will notice that always \\(v + w = 1\\) along the white border line. And since we have set our blue and green axis' to always have length 1 (even if they don't appear so) we know this will be true for any triangle. So we can see that, on top of `v` and `w` being positive this also must be true: `v + w <= 1` (well we can see a lot of things actually. For example if we look down, we can see our legs.)
 
 While there are other ways to show this, for example treating each point as a metaphorical weight, this explanation makes most sense to me. 
 
 UvToWorld Kernel
 ====
+
+The following code is a kernel. It considers in parallel all texels of a texture, and finds its position in 3D space--if it has one. First look through the code, then Ill tell you some math stuff. Take note that this is the manifestation of the **UV Space to World Space** conceptual section above. It also might be helpful to take another look at the c# summary. 
+
 ```cuda
 [numthreads(8,8,1)]
 void UvToWorld (uint3 id : SV_DispatchThreadID)
 {
-  float a;
-  float b;
-  float c;
-  float2 curUV = float2((float)id.x / (float)texRes, (float)id.y / (float)texRes);
+    float v;
+    float w;
+    float c;
+    float2 curUV = float2((float)id.x / (float)texRes, (float)id.y / (float)texRes);
 
-  for (int i = 0; i < numTriangles; i++)
-  {
-    float2 p1 = triangles[i].p1Uv;
-    float2 p2 = triangles[i].p2Uv;
-    float2 p3 = triangles[i].p3Uv;
-
-    float denom = (p2.y - p3.y) * (p1.x - p3.x) - (p2.x - p3.x) * (p1.y - p3.y);
-    
-    a = ((p2.y - p3.y) * (curUV.x - p3.x) - (p2.x - p3.x) * (curUV.y - p3.y)) / denom;
-    b = ((p3.y - p1.y) * (curUV.x - p3.x) - (p3.x - p1.x) * (curUV.y - p3.y)) / denom;
-    c = 1 - a - b;
-
-    //inside triangle  
-    if (0 - eps <= a && a <= 1 + eps && 0 - eps <= b && b <= 1 + eps && 0 - eps <= c && c <= 1 + eps) 
+    for (int i = 0; i < numTriangles; i++)
     {
-      usedUVs[texRes * id.y + id.x].used = 1;
+        float2 p1 = triangles[i].p1Uv;
+        float2 p2 = triangles[i].p2Uv;
+        float2 p3 = triangles[i].p3Uv;
+                
+        float denom = (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y);
+        
+        v = ((curUV.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (curUV.y - p1.y)) / denom;
+        w = ((p2.x - p1.x) * (curUV.y - p1.y) - (curUV.x - p1.x) * (p2.y - p1.y)) / denom;
+        
+        if (0 - eps <= v && 0 - eps <= w && v + w <= 1 + eps) //inside triangle
+        {
+            usedUVs[texRes * id.y + id.x].used = 1;
 
-      float3 wp1 = triangles[i].p1WPos;
-      float3 wp2 = triangles[i].p2WPos;
-      float3 wp3 = triangles[i].p3WPos;
+            float3 wp1 = triangles[i].p1WPos;
+            float3 wp2 = triangles[i].p2WPos;
+            float3 wp3 = triangles[i].p3WPos;
+            c = 1 - v - w;
 
-      usedUVs[texRes * id.y + id.x].worldLoc = a * wp1 + b * wp2 + c * wp3;
-      nm[id.xy].g = 1 - nm[id.xy].g;
-      nm[id.xy] = nm[id.xy] *  2 - 1;
-      usedUVs[texRes * id.y + id.x].normal = 
-          triangles[i].normal * nm[id.xy].b
-          + triangles[i].binormal * nm[id.xy].g
-          + triangles[i].tangent * nm[id.xy].r;
-      usedUVs[texRes * id.y + id.x].normal = normalize(usedUVs[texRes * id.y + id.x].normal);
-      usedUVs[texRes * id.y + id.x].geoNormal = triangles[i].normal;
-      break;
+            usedUVs[texRes * id.y + id.x].worldLoc = c * wp1 + v * wp2 + w * wp3;
+            nm[id.xy].g = 1 - nm[id.xy].g;
+            nm[id.xy] = nm[id.xy] *  2 - 1;
+            usedUVs[texRes * id.y + id.x].normal = 
+                triangles[i].normal * nm[id.xy].b + 
+                triangles[i].binormal * nm[id.xy].g + 
+                triangles[i].tangent * nm[id.xy].r;
+            usedUVs[texRes * id.y + id.x].normal = normalize(usedUVs[texRes * id.y + id.x].normal);
+            usedUVs[texRes * id.y + id.x].geoNormal = triangles[i].normal;
+            break;
+        }
     }
-  }
 }
 ```
+
+You might've noticed that in the first half of the kernel, the code bears barrycentric similarities to the intersection method discussed earlier. It is exactly the same method in fact, only it considers a 2D triangle rather than a 3D triangle. We could still use all those dot products, but it was more efficient to find another way.
+
+recall this piece of math from the intersection method above:
+
+$$
+V_2 = v(V_0) + w(V_1)
+$$
+
+where \\(V_2 = curUV - P_1\\), \\(V_0 = P_2 - P_1\\), and \\(V_1 = P_3 - P_1\\). Remeber that we want a system of equations to solve \\(v\\) and \\(w\\), (that is, an equation for each variable). Since it is a 2D triangle with 2D points we don't need the dot product to do that. Instead we can do this:
+
+$$
+V_2.x = v(V_0.x) + w(V_1.x)
+$$
+
+$$
+V_2.y = v(V_0.y) + w(V_1.y)
+$$
+
+and the rest of the process is the exact same, for the barrycentric coordinate part. We'll discuss what's inside the `if statement` next
 
 Dynamic Light Kernel
 ==========
@@ -586,3 +608,5 @@ Improvements and Optimizations
   1. LOD textures and mesh 
   1. allow for lighting to work in editor
   1. changing lighting while in play mode should effect lighting in editor
+
+  ```sadly, I know that barrycentric is actually spelled barycentric. But I really want it to be barry.```
