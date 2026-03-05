@@ -359,7 +359,17 @@ first off, `eps` is just short for epsilon. It is simply a very small value used
 
 Right off the bat, we can deduce that any point within the triangle, must at least have positive coordinates, seeing as how the blue and green coordinates are only positive inside the triangle. Therefore the first two terms of the return boolean consider if `v` and `w` are greater than or equal to zero. 
 
-Now as for the last term, `v + w <= 1`, take a look at the picture below. It is another triangle, similar to the last but with a different shape. Hover your mouse over the white line, and see if you notice anything about the displayed points (only works on desktop).  
+Now as for the last term, `v + w <= 1`, take a look at the picture below. It is another triangle, similar to the last but with a different shape. Hover your mouse over the black dotted line (which is representetive of our white line in the above picture), and see if you notice anything about the displayed points.  
+
+<div style="text-align:center;">
+  <iframe 
+    src="https://www.desmos.com/calculator/zfjjabmhdn?embed"
+    width="500"
+    height="500"
+    style="border:1px solid #ccc;"
+    frameborder="0">
+  </iframe>
+</div>
 
 ```plotly
   {
@@ -479,6 +489,8 @@ V_2.y = v(V_0.y) + w(V_1.y)
 $$
 
 and the rest of the process is the exact same, for the barrycentric coordinate part. We'll discuss what's inside the `if statement` next
+
+if the triangle inside the square, we set a "used" flag on the UV in question: ```usedUVs[texRes * id.y + id.x].used = 1;```
 
 Dynamic Light Kernel
 ==========
