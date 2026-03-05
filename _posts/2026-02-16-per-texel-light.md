@@ -453,8 +453,9 @@ void UvToWorld (uint3 id : SV_DispatchThreadID)
     }
 }
 ```
+The first thing to discuss is kernel size. This explanation goes for all the kernels: An 8x8 threaded process fits well into a base 2 texture, and it's not too large for any mobile phone worth its salt. (Salty phone, yummy)
 
-You might've noticed that in the first half of the kernel, the code bears barrycentric similarities to the intersection method discussed earlier. It is exactly the same method in fact, only it considers a 2D triangle rather than a 3D triangle. We could still use all those dot products, but it was more efficient to find another way.
+Next, you might've noticed that in the first half of the kernel, the code bears barrycentric similarities to the intersection method discussed earlier. It is exactly the same method in fact, only it considers a 2D triangle rather than a 3D triangle. We could still use all those dot products, but it was more efficient to find another way.
 
 recall this piece of math from the intersection method above:
 
@@ -495,7 +496,7 @@ $$
 
 Take a look back above in the previous section if you don't remeber what this equation is doing. 
 
-As for the rest of the `if statement`, I will let the comments already there do the talking. 
+As for the rest of the `if statement`, I will let the comments already there do most of the talking. Basically we are just multiplying the normal map texture onto the normal geometry, and applying that to the UV. Then we break the loop, since the UV should only be inside of one triangle.
 
 Dynamic Light Kernel
 ==========
@@ -503,11 +504,7 @@ Dynamic Light Kernel
 [numthreads(8,8,1)]
 void DynamicLight(uint3 id : SV_DispatchThreadID)
 {
-    float4 amb = 0; //float4(0.3/2, 0.15/2, 0.15/2, 1);
-    //totalResult[id.xy] = amb; //ambient light
-
     int uvInd = texRes * id.y + id.x;
-    usedUVs[uvInd].lit = 1;
     if (usedUVs[uvInd].used == 1)
     {
         for (int i = 0; i < numLights[0]; i++)
@@ -519,54 +516,45 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
             float distUVtoLight = length(locMinusLight);
             float3 lightVec = normalize(locMinusLight);
             float angleBetweenLightAndLocWNormalMap = dot(lightVec, usedUVs[uvInd].normal);
-            float angleBetweenLightAndLocGeo = dot(lightVec, usedUVs[uvInd].geoNormal);
+            //outside of range, and facing the light
             if (distUVtoLight < lights[i].range && angleBetweenLightAndLocWNormalMap < 0)
             {
-                bool shadowHit = false;
                 float distFromLighttoPlane = 0;
-                if (lights[i].shadowType > 0)
+                if (lights[i].shadowType > 0)//hard shadows
                 {
                     float minDistUVtoInter = 0;
-                    float maxDistUVtoInter = 0;
                     for (int j = 0; j < numTriangles; j++)
                     {
                         //see if plane and lightVec are opposite
-                        float parallelDot = dot(lightVec, triangles[j].normal); 
+                        float parallelDot = dot(lightVec, triangles[j].normal);
 
                         // if they are not, and not parallel, then they intersect
                         if (abs(parallelDot) >= 0) 
                         {
                             //https://www.youtube.com/watch?v=x_SEyKtCBPU
                             distFromLighttoPlane = 
-                              dot(triangles[j].p3WPos - lights[i].loc, triangles[j].normal) 
-                              / parallelDot; 
+                                dot(triangles[j].p3WPos - lights[i].loc, triangles[j].normal) / parallelDot; 
                         
                             if (distFromLighttoPlane >= distUVtoLight - eps)
                                 continue;
 
                             float3 intersection = lights[i].loc + (distFromLighttoPlane * lightVec);
-
+                            //if the intersection is in the triangle, 
+                            //then the triangle casts a shadow on the texel
                             if (checkIntersectionInTri(intersection, triangles[j]))
                             {
-                                shadowHit = true;
                                 threadShad = 1;
-                                if(lights[i].shadowType == 2)
+                                if (lights[i].shadowType == 2)//dynamic blur shadows
                                 {
                                     float distFromInterToUV = length(intersection - uvWPos);
-      
-                                    //this should be changed to only have blurring process
-                                    //take place if the mindDist is changed.
-                                    //That way it's not done every loop.
+
                                     if (minDistUVtoInter != 0)
                                     {
                                         minDistUVtoInter = min(distFromInterToUV, minDistUVtoInter);
-                                        maxDistUVtoInter = max(distFromInterToUV, maxDistUVtoInter);
                                     }
                                     else
                                     {
                                         minDistUVtoInter = distFromInterToUV;
-                                        // investigate how this could be used
-                                        maxDistUVtoInter = distFromInterToUV;
                                     }
                                         
                                     float blurAmount = (minDistUVtoInter / distUVtoLight);
@@ -577,12 +565,11 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                                     threadShad = clamp(threadShad, 0, 1);
                                 }
                                 else
-                                    // we need to go through every triangle for the dynamic 
-                                    //blur since it is based off the nearest triangle depth,
-                                    //and the first triangle in the loop may not be the nearest. 
-                                    //However for solid shadow, that's not necessary, 
-                                    //so we can break the loop as soon as we find a triangle
-                                    //that shades the texel
+                                    // we need to go through every triangle for the dynamic blur since
+                                    //it is based off the nearest triangle depth, and the first 
+                                    //triangle in the loop may not be the nearest. However for solid shadow,
+                                    //that's not necessary, so we can break the loop as soon as
+                                    //we find a triangle that shades the texel
                                     break;
                             }
                         }
@@ -591,14 +578,11 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                 if (angleBetweenLightAndLocWNormalMap < 0)
                 {
                     float4 val = 
-                      (1 - distUVtoLight / lights[i].range) * -1 * angleBetweenLightAndLocWNormalMap;
-                    threadUnlit = 
-                      (1 - threadShad) * val * val 
-                      * (float)usedUVs[uvInd].lit * lights[i].color * lights[i].intensity;
+                        (1 - distUVtoLight / lights[i].range) * abs(angleBetweenLightAndLocWNormalMap);
+                    threadUnlit = (1 - threadShad) * val * val * lights[i].color * lights[i].intensity;
                 }
             }
             totalResult[id.xy] += threadUnlit;
-            //totalResult[id.xy] = clamp(totalResult[id.xy], 0, 1);
         }
     }
 }
@@ -621,9 +605,11 @@ Improvements and Optimizations
 ====
 ----
   1. Allow for multiple meshes
+  1. Allow for moving meshes
   1. BSP
   1. LOD textures and mesh 
   1. allow for lighting to work in editor
   1. changing lighting while in play mode should effect lighting in editor
+  1. ambient light
 
   ```sadly, I know that barrycentric is actually spelled barycentric. But I really want it to be barry.```
