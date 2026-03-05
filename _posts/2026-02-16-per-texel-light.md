@@ -34,42 +34,62 @@ My lighting is a per-texel lighting; that is, lighting is calculated for every t
 
 Ok so now let's get into the good stuff: The concept behind the triangle-relative-position. It's known as *Barrycentric coordinates*. I wonder if the creator was named Barry. What if their name was something like Mobius. That would be something. 
 
-Anyway, first up take a look at the two pictures below. The first picture is a triangle with a texel in World Space, and the second picture is the same triangle and texel but in UV space. \
-<img src="\images\lightScene\barryCentric\WTri.png">
-<img src="\images\lightScene\barryCentric\UVTri.png">
+Anyway, first up take a look at the two pictures below. The first picture is a triangle with a texel in World Space, and the second picture is the same triangle and texel but in UV space. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\barryCentric\WTri.png">
+</div>
+<div style="text-align:center;">
+    <img src="\images\lightScene\barryCentric\UVTri.png">
+</div>
 
 Again, we need to know the texel's position in world space. By nature of a texel, we know its position in UV space, but we do not know its position in world space (so *TexW* is highlighted in red in the world space picture above). However we do know the position of the triangle in world space, ***and*** UV space. So if we can find the position of the texel relative ***only*** to the triangle in UV space, then we can map the texel into world space using that relative position. 
 
-So basically here's one way to look at it. Just like you'd graph a point onto a graph, we are going to graph the texel onto the triangle. But instead of using the normal X and Y axis, we are going to use two sides of the triangle as the Axis'. And, I've chosen to specify that from every point on the triangle to another is 1 unit. That is, every side of the triangle is length 1 on it's relative graph. A picture of the triangle "graphed" might make it more clear. I've chose to use P1 to P2 (blue), and P1 to P3 (green) as the Axis'. \
-<img src="\images\lightScene\barryCentric\graphTri.png">
+So basically here's one way to look at it. Just like you'd graph a point onto a graph, we are going to graph the texel onto the triangle. But instead of using the normal X and Y axis, we are going to use two sides of the triangle as the Axis'. And, I've chosen to specify that from every point on the triangle to another is 1 unit. That is, every side of the triangle is length 1 on it's relative graph. A picture of the triangle "graphed" might make it more clear. I've chose to use P1 to P2 (blue), and P1 to P3 (green) as the Axis'. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\barryCentric\graphTri.png">
+</div>
 
-Remeber, that picture applies whether the triangle is in World Space, or UV space since it is relative only to the triangle. So what we're gonna do is use the UV space triangle, and the UV space texel (since those are the values that we know), and map the texel onto the triangle. \
-<img src="\images\lightScene\barryCentric\UVGraphTri.png">
+Remeber, that picture applies whether the triangle is in World Space, or UV space since it is relative only to the triangle. So what we're gonna do is use the UV space triangle, and the UV space texel (since those are the values that we know), and map the texel onto the triangle. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\barryCentric\UVGraphTri.png">
+</div>
 
-And now that we have the relative position (as identified by the blue and green lines), we can multiply that same relative positon onto the world space texel! And now we know our texel position in world space! \
-<img src="\images\lightScene\barryCentric\WGraphTri.png">
+And now that we have the relative position (as identified by the blue and green lines), we can multiply that same relative positon onto the world space texel! And now we know our texel position in world space! 
+<div style="text-align:center;">
+    <img src="\images\lightScene\barryCentric\WGraphTri.png">
+</div>
 
 So to summarize, this method allows us to know a texel's position relative to a triangle. Then that relative position can be used to find the texel's position in whatever space we desire, so long as the same triangle is present. There are some more cool math things about this, which we'll discuss later. 
 
 Lit
 ====
 
-Now let's move away from triangles, and--for the sake of simplicity--lets instead lets consider a 2D pixelated scene. Everything black is geometry, and the red is a light. \
-<img src="\images\lightScene\Scene.png"> 
+Now let's move away from triangles, and--for the sake of simplicity--lets instead lets consider a 2D pixelated scene. Everything black is geometry, and the red is a light. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\Scene.png"> 
+</div>
 
-Now let's make things lit. To be clear, *not* shadowed, just *lit*. That will make sense in a second. \
-<img src="\images\lightScene\Lit.png"> 
+Now let's make things lit. To be clear, *not* shadowed, just *lit*. That will make sense in a second. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\Lit.png"> 
+</div>
 
 Notice how neither the crescent object or circle object block light from reaching the wavy ground, nor does the wavy ground block the deep parts of the crevices where light shouldn't reach. Again, the scene is not shadowed, just lit. So how is a pixel lit or unlit? A pixel being lit is based on the angle, [***A***] from ***the surface which the pixel is on*** to the ***direction of the light towards that surface***. 
 
-Here is one example of ***A*** at 90 degrees, where the surface and the direction of the light to the surface are perpendicular, and where the pixel would be most well lit. \
-<img src="\images\lightScene\Perp.png"> 
+Here is one example of ***A*** at 90 degrees, where the surface and the direction of the light to the surface are perpendicular, and where the pixel would be most well lit. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\Perp.png"> 
+</div>
 
-Here is one example of ***A*** near 180 degrees, where the surface and the direction of the light to the surface are nearing parallel, and where the pixel would become dimly lit. \
-<img src="\images\lightScene\Near180.png"> 
+Here is one example of ***A*** near 180 degrees, where the surface and the direction of the light to the surface are nearing parallel, and where the pixel would become dimly lit. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\Near180.png"> 
+</div>
 
-Here is one example of ***A*** past 180 degrees, where the surface and the direction of the light to the surface are past parallel and opposite, and where the surface would become unlit. To reiterate, the pixel is unlit because of its angle to the light, not because anything is blocking the light from reaching it. \
-<img src="\images\lightScene\Past180.png"> 
+Here is one example of ***A*** past 180 degrees, where the surface and the direction of the light to the surface are past parallel and opposite, and where the surface would become unlit. To reiterate, the pixel is unlit because of its angle to the light, not because anything is blocking the light from reaching it. 
+<div style="text-align:center;">
+    <img src="\images\lightScene\Past180.png"> 
+</div>
 
 So that is a conceptual way of how my lighting makes a scene lit, but just in 2D. It's actually pretty common to do lighting this way (just usually for fragments instead of pixels/texels of geometry). Pay attention next time you play a game. You'll see all sorts of lit things where they ought to be covered in shadow! 
 
@@ -99,11 +119,14 @@ I bet your brain literally exploded right now.
 
 Ok, but seriously, now move your hand back and forth between the light and the wall. Notice that as your hand moves closer to the wall, the lines of the shadow becomes more solid. As your hand moves closer to the light, the lines of the shadow blur. Now hold your hand still and move the light around. As the light gets closer to your hand the shadow of your hand blurs, and as the light moves away from your hand the shadow of your hand solidifies. So now we have some useful values:
 
-Visualized as the green line, the total distance of the light ray to the shaded texel, [***LR***]: \
-<img src="\images\lightScene\blur\lightRay.png"> 
-
+Visualized as the green line, the total distance of the light ray to the shaded texel, [***LR***]: 
+<div style="text-align:center;">
+    <img src="\images\lightScene\blur\lightRay.png"> 
+</div>
 Visualized as the green line, the nearest distance along the light ray from the shaded texel to the shading object, [***NLR***]: \
-<img src="\images\lightScene\blur\lightRayTex.png"> 
+<div style="text-align:center;">
+    <img src="\images\lightScene\blur\lightRayTex.png"> 
+</div>
 
 While there are some adjustment values availble to the user, the base of the blurring in my program is just ***Blur*** = ***NLR*** / ***LR***
 
@@ -354,68 +377,22 @@ return 0 - eps <= v && 0 - eps <= w && v + w <= 1 + eps;
 first off, `eps` is just short for epsilon. It is simply a very small value used to give leniency to calculations. 
 
 `v` and `w` tell us a point's position relative to a triangle, but what we really want to know is if the point is inside or outside the triangle. Take a look at this picture again. 
-
-<img src="\images\lightScene\barryCentric\graphTri.png">
+<div style="text-align:center;">
+    <img src="\images\lightScene\barryCentric\graphTri.png">
+</div>
 
 Right off the bat, we can deduce that any point within the triangle, must at least have positive coordinates, seeing as how the blue and green coordinates are only positive inside the triangle. Therefore the first two terms of the return boolean consider if `v` and `w` are greater than or equal to zero. 
 
-Now as for the last term, `v + w <= 1`, take a look at the picture below. It is another triangle, similar to the last but with a different shape. Hover your mouse over the black dotted line (which is representetive of our white line in the above picture), and see if you notice anything about the displayed points.  
-
+Now as for the last term, `v + w <= 1`, take a look at the picture below. It is another triangle, similar to the last but with a different shape. Click and drag your mouse over the black dotted line (which is representetive of our white line in the above picture), and see if you notice anything about the displayed points.  
 <div style="text-align:center;">
-  <iframe 
-    src="https://www.desmos.com/calculator/zfjjabmhdn?embed"
-    width="500"
-    height="500"
-    style="border:1px solid #ccc;"
-    frameborder="0">
-  </iframe>
+    <iframe 
+        src="https://www.desmos.com/calculator/zfjjabmhdn?embed"
+        width="440"
+        height="500"
+        style="border:1px solid #ccc;"
+        frameborder="0">
+    </iframe>
 </div>
-
-```plotly
-  {
-  "data": [
-    {
-      "x": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-      "y": [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0],
-      "type": "scatter",
-      "mode": "lines",
-      "line": {
-        "color": "white",
-        "width": 3
-      },
-      "hovertemplate": "v: %{x}<br>w: %{y}<extra></extra>"
-    }
-  ],
-  "layout": {
-    "xaxis": { "range": [-0.1, 1.1] },
-    "yaxis": { "range": [-0.1, 1.1] },
-    "shapes": [
-      {
-        "type": "line",
-        "x0": 0,
-        "x1": 0,
-        "y0": 0,
-        "y1": 1,
-        "line": {
-          "color": "rgb(129, 114, 255)",
-          "width": 3
-        }
-      },
-      {
-        "type": "line",
-        "x0": 0,
-        "x1": 1,
-        "y0": 0,
-        "y1": 0,
-        "line": {
-          "color": "rgb(26, 214, 55)",
-          "width": 3
-        }
-      }
-    ]
-  }
-}
-```
 
 You will notice that always \\(v + w = 1\\) along the white border line. And since we have set our blue and green axis' to always have length 1 (even if they don't appear so) we know this will be true for any triangle. So we can see that, on top of `v` and `w` being positive this also must be true: `v + w <= 1` (well we can see a lot of things actually. For example if we look down, we can see our legs.)
 
@@ -453,17 +430,24 @@ void UvToWorld (uint3 id : SV_DispatchThreadID)
             float3 wp1 = triangles[i].p1WPos;
             float3 wp2 = triangles[i].p2WPos;
             float3 wp3 = triangles[i].p3WPos;
-            c = 1 - v - w;
-
-            usedUVs[texRes * id.y + id.x].worldLoc = c * wp1 + v * wp2 + w * wp3;
+            usedUVs[texRes * id.y + id.x].worldLoc = wp1 + v * (wp2 - wp1) + w * (wp3 - wp1);
+            
+            //I don't fully undestand why the g needs to be flipped, 
+            //but the normal map isn't right unless it is
             nm[id.xy].g = 1 - nm[id.xy].g;
+            //set values between 0->1, incase they are -0.5->0.5
             nm[id.xy] = nm[id.xy] *  2 - 1;
+            //apply normal map
             usedUVs[texRes * id.y + id.x].normal = 
                 triangles[i].normal * nm[id.xy].b + 
                 triangles[i].binormal * nm[id.xy].g + 
                 triangles[i].tangent * nm[id.xy].r;
             usedUVs[texRes * id.y + id.x].normal = normalize(usedUVs[texRes * id.y + id.x].normal);
+            //get the normal of the triangles without the normal map
             usedUVs[texRes * id.y + id.x].geoNormal = triangles[i].normal;
+
+            //since the the UV is used (ie in some triangle) 
+            //it should not be in another triangle, so we can stop searching. 
             break;
         }
     }
@@ -478,7 +462,7 @@ $$
 V_2 = v(V_0) + w(V_1)
 $$
 
-where \\(V_2 = curUV - P_1\\), \\(V_0 = P_2 - P_1\\), and \\(V_1 = P_3 - P_1\\). Remeber that we want a system of equations to solve \\(v\\) and \\(w\\), (that is, an equation for each variable). Since it is a 2D triangle with 2D points we don't need the dot product to do that. Instead we can do this:
+Same math applies here, but now we are in UV space. So \\(V_2 = curUV - P_1\\), \\(V_0 = P_2 - P_1\\), and \\(V_1 = P_3 - P_1\\). Remeber that we want a system of equations to solve \\(v\\) and \\(w\\). Since it is a 2D triangle with 2D points we don't need the dot product to do that. Instead we can do this:
 
 $$
 V_2.x = v(V_0.x) + w(V_1.x)
@@ -490,7 +474,28 @@ $$
 
 and the rest of the process is the exact same, for the barrycentric coordinate part. We'll discuss what's inside the `if statement` next
 
-if the triangle inside the square, we set a "used" flag on the UV in question: ```usedUVs[texRes * id.y + id.x].used = 1;```
+if the UV is inside the triangle...
+
+first, we set a "used" flag on the UV: ```usedUVs[texRes * id.y + id.x].used = 1;```
+
+then this:
+```cuda
+float3 wp1 = triangles[i].p1WPos;
+float3 wp2 = triangles[i].p2WPos;
+float3 wp3 = triangles[i].p3WPos;
+usedUVs[texRes * id.y + id.x].worldLoc = wp1 + v * (wp2 - wp1) + w * (wp3 - wp1);
+```
+First off, it's imperative that you listen to [this song from 3 idiots](https://www.youtube.com/watch?v=7PzwOiW8-n0) in order to move forward. 
+
+Now, this code is just this equation:
+
+$$
+P = P_1 + v(P_2 - P_1) + w(P_3 - P_1)
+$$
+
+Take a look back above in the previous section if you don't remeber what this equation is doing. 
+
+As for the rest of the `if statement`, I will let the comments already there do the talking. 
 
 Dynamic Light Kernel
 ==========
