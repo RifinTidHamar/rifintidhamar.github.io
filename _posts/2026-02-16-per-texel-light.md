@@ -304,7 +304,9 @@ A = \begin{bmatrix}
 V_0 \cdot V_0 & V_1 \cdot V_0 \\
 V_0 \cdot V_1 & V_1 \cdot V_1
 \end{bmatrix}
-\quad
+$$
+
+$$
 B = \begin{bmatrix}
 V_2 \cdot V_0 \\
 V_2 \cdot V_1
@@ -363,8 +365,10 @@ $$
 V_0 \cdot V_0 & V_1 \cdot V_0 \\
 V_0 \cdot V_1 & V_1 \cdot V_1
 \end{vmatrix}}
-=
-V_0 \cdot V_0 * V_1 \cdot V_1 - V_1 \cdot V_0 * V_0 \cdot V_1
+$$
+
+$$
+= V_0 \cdot V_0 * V_1 \cdot V_1 - V_1 \cdot V_0 * V_0 \cdot V_1
 $$
 
 Notice how this equals the `denom` variable from the code above (keeping in mind that dot products are commutative). Then, once you've done a similar process for the other determinants, you'll notice that the numerators of `v` and `w` are equal to the numerators of \\(v\\) and \\(w\\) respectively.
@@ -387,8 +391,8 @@ Now as for the last term, `v + w <= 1`, take a look at the picture below. It is 
 <div style="text-align:center;">
     <iframe 
         src="https://www.desmos.com/calculator/zfjjabmhdn?embed"
-        width="440"
-        height="500"
+        width="300"
+        height="300"
         style="border:1px solid #ccc;"
         frameborder="0">
     </iframe>
