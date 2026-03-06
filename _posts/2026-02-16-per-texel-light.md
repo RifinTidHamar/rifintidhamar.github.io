@@ -123,7 +123,7 @@ Visualized as the green line, the total distance of the light ray to the shaded 
 <div style="text-align:center;">
     <img src="\images\lightScene\blur\lightRay.png"> 
 </div>
-Visualized as the green line, the nearest distance along the light ray from the shaded texel to the shading object, [***NLR***]: \
+Visualized as the green line, the nearest distance along the light ray from the shaded texel to the shading object, [***NLR***]:
 <div style="text-align:center;">
     <img src="\images\lightScene\blur\lightRayTex.png"> 
 </div>
@@ -504,6 +504,9 @@ As for the rest of the `if statement`, I will let the comments already there do 
 
 Dynamic Light Kernel
 ==========
+
+The following code represents the **Lit**, **Shadowed**, and **Dynamic Blurred Shadows** conceptual sections above. Take a look at the code, and then we'll talk about it. Most everything here has actually already been touched upon. 
+
 ```cuda
 [numthreads(8,8,1)]
 void DynamicLight(uint3 id : SV_DispatchThreadID)
@@ -513,8 +516,8 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
     {
         for (int i = 0; i < numLights[0]; i++)
         {
-            float4 threadUnlit = 0;
-            float4 threadShad = 0;
+            float4 lit = 0;
+            float shad = 1;
             float3 locMinusLight = usedUVs[uvInd].worldLoc - lights[i].loc;
             float3 uvWPos = usedUVs[texRes * id.y + id.x].worldLoc;
             float distUVtoLight = length(locMinusLight);
@@ -537,7 +540,8 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                         {
                             //https://www.youtube.com/watch?v=x_SEyKtCBPU
                             distFromLighttoPlane = 
-                                dot(triangles[j].p3WPos - lights[i].loc, triangles[j].normal) / parallelDot; 
+                                dot(triangles[j].p3WPos - lights[i].loc, triangles[j].normal) /
+                                parallelDot; 
                         
                             if (distFromLighttoPlane >= distUVtoLight - eps)
                                 continue;
@@ -547,7 +551,7 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                             //then the triangle casts a shadow on the texel
                             if (checkIntersectionInTri(intersection, triangles[j]))
                             {
-                                threadShad = 1;
+                                shad = 0;
                                 if (lights[i].shadowType == 2)//dynamic blur shadows
                                 {
                                     float distFromInterToUV = length(intersection - uvWPos);
@@ -562,18 +566,21 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                                     }
                                         
                                     float blurAmount = (minDistUVtoInter / distUVtoLight);
+                                    
+                                    //blurring option that increases blurr
                                     blurAmount = pow(blurAmount, lights[i].blurPower);
+                                    //blurring option that changes blur position
                                     blurAmount *= lights[i].blurMultiplier;
                                 
-                                    threadShad -= blurAmount;
-                                    threadShad = clamp(threadShad, 0, 1);
+                                    shad += blurAmount;
+                                    shad = clamp(shad, 0, 1);
                                 }
                                 else
                                     // we need to go through every triangle for the dynamic blur since
                                     //it is based off the nearest triangle depth, and the first 
-                                    //triangle in the loop may not be the nearest. However for solid shadow,
-                                    //that's not necessary, so we can break the loop as soon as
-                                    //we find a triangle that shades the texel
+                                    //triangle in the loop may not be the nearest. However for solid 
+                                    //shadow, that's not necessary, so we can break the loop 
+                                    //as soon as we find a triangle that shades the texel
                                     break;
                             }
                         }
@@ -583,17 +590,67 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
                 {
                     float4 val = 
                         (1 - distUVtoLight / lights[i].range) * abs(angleBetweenLightAndLocWNormalMap);
-                    threadUnlit = (1 - threadShad) * val * val * lights[i].color * lights[i].intensity;
+                    lit = shad * val * val * lights[i].color * lights[i].intensity;
                 }
             }
-            totalResult[id.xy] += threadUnlit;
+            totalResult[id.xy] += lit;
         }
     }
 }
 ```
 
+I think the best way to explain this code is to simplify it using pseudocode. Keep in mind this is a parallel process for every UV. 
+
+```cuda
+if(the UV is used)
+    for(every light)
+        if(the UV is within range of the light 
+        and the UVs angle to the light is less than 180 degrees)
+        |   if(the light casts a shadow)
+        |   |   for(every triangle)
+        |   |       if(the triangle's angle to the light is less than 180 degrees)
+        |   |           find how far it takes the light beam to intersect with the triangle
+        |   |           if(the light beam intersection is farther from the light than the UV is)
+        |   |               go the the next triangle, since it is beyond the UV 
+        |   |               so it can't possibly cause a shadow
+        |   |           make an intersection vector of the intersection distance 
+        |   |           with the angle of the light to the triangle.
+        |   |           if(that intersection vector still intersects with the triangle)
+        |   |               save the spot as shaded 
+        |   |               if(the light is set to cast dynamically blurred shadows)
+        |   |                   find the interesction which has the least distance to the UV
+        |   |                   lighten the shaded spot by: 
+        |   |                   (smallest interesction distance to UV) / (UV distance to light)
+        |   |               else
+        |   |                   break the loop, since a spot can't be variablly shaded
+        |   |                   unless it is dynamically blurred. AKA hard shadows.
+        |   |
+        |   if(the UV faces the light)
+        |       set a brightness value (a value 0 to 1) by multiplying:
+        |           a value 0 to 1, which approaches 0 the farther the light is from the UV
+        |           a value 0 to 1, which approaches 0 
+        |               as the angle between the UV and the light steepens
+        |       set the lit color by multiplying:
+        |           shaded spots (a value 0 to 1)
+        |           the brightness value multiplied by itself so that we have steeper light drop off
+        |           the color of the light
+        |           the intensity of the light (naturally set at 1)
+        |     
+        add the lit color to a total texture used in other kernels
+```
+The last bit of code that I think deserves special attention is this:
+
+```distFromLighttoPlane = dot(triangles[j].p3WPos - lights[i].loc, triangles[j].normal) / parallelDot;```
+
+and while explaining it would be a lot of fun, the first five minutes of this [youtube video](https://www.youtube.com/watch?v=x_SEyKtCBPU) explains it in a way that I wouldn't change at all. 
+
 Apply Kernel
 =====
+
+Well look at that. We're almost done. This has been quite the journey. I feel like I know you a little better. Like maybe... \***scootches in closer**\*... a lot better... \***locks eyes**\*... I feel so connected with you right now... \***puts hand on thigh**\*... Do you feel the same?... \***closes eyes**\*... \***leans in for a smoochy**\* \***gets slapped**\* \***cries a lot**\*
+
+Well, let's move onto out last kernel. Take a look first, and then we'll discuss it... for the last time...
+
 ```cuda
 [numthreads(8, 8, 1)]
 void Apply(uint3 id : SV_DispatchThreadID)
