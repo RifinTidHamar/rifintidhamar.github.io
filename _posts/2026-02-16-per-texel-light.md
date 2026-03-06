@@ -686,5 +686,6 @@ Improvements and Optimizations
   1. changing lighting while in play mode should effect lighting in editor
         * on the flip side the previous point, it would be nice that if you are running the game, the lighting can still be moved permanently (rather than going through the annoying process of copying values in play mode and pasting in the editor mode)
   1. ambient light
+        * Ambient light is real easy to add. It's simply just some color value that is added to every texel before lighting is calculated. But I would like the ability to blend ambient lighting for multiple lights (say if you have red ambient light for one light, and blue for another light, then the total ambient light would be purple). I also want ambient light fall off, so that it only reaches as far as the light can reach. 
 
   ```sadly, I know that barrycentric is actually spelled barycentric. But I really want it to be barry.```
