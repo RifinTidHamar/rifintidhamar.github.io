@@ -1,5 +1,5 @@
 ---
-title: 'Per Texel Light (in-progress)'
+title: 'Per Texel Lighting'
 date: 2026-02-16
 permalink: /posts/2026/02/Per-Texel-Light/
 tags:
@@ -490,7 +490,7 @@ float3 wp2 = triangles[i].p2WPos;
 float3 wp3 = triangles[i].p3WPos;
 usedUVs[texRes * id.y + id.x].worldLoc = wp1 + v * (wp2 - wp1) + w * (wp3 - wp1);
 ```
-First off, it's imperative that you listen to [this song from 3 idiots](https://www.youtube.com/watch?v=7PzwOiW8-n0) in order to move forward. 
+First off, it's imperative that you listen to [this song from a great movie called 3 idiots](https://www.youtube.com/watch?v=7PzwOiW8-n0) in order to move forward. 
 
 Now, this code is just this equation:
 
@@ -505,7 +505,9 @@ As for the rest of the `if statement`, I will let the comments already there do 
 Dynamic Light Kernel
 ==========
 
-The following code represents the **Lit**, **Shadowed**, and **Dynamic Blurred Shadows** conceptual sections above. Take a look at the code, and then we'll talk about it. Most everything here has actually already been touched upon. 
+The following code represents the **Lit**, **Shadowed**, and **Dynamic Blurred Shadows** conceptual sections above. It's important to note that while they share the same name, the `totalResult` texture in this kernel is not the same texture as the `totalResult` texture of the apply-kernel coming up. Remeber this kernel is used twice. Once for for baked lighting and once for Real-time lighting. So the `totalResult` is representative of whichever sort of lighting it is being used for. 
+
+Take a look at the code, and then we'll talk about it. Most everything here has actually already been touched upon. 
 
 ```cuda
 [numthreads(8,8,1)]
@@ -638,6 +640,7 @@ if(the UV is used)
         |     
         add the lit color to a total texture used in other kernels
 ```
+
 The last bit of code that I think deserves special attention is this:
 
 ```distFromLighttoPlane = dot(triangles[j].p3WPos - lights[i].loc, triangles[j].normal) / parallelDot;```
@@ -647,7 +650,7 @@ and while explaining it would be a lot of fun, the first five minutes of this [y
 Apply Kernel
 =====
 
-Well look at that. We're almost done. This has been quite the journey. I feel like I know you a little better. Like maybe... \***scootches in closer**\*... a lot better... \***locks eyes**\*... I feel so connected with you right now... \***puts hand on thigh**\*... Do you feel the same?... \***closes eyes**\*... \***leans in for a smoochy**\* \***gets slapped**\* \***cries a lot**\*
+Well look at that. We're almost done. This has been quite the journey. I feel like I know you a little better. Like maybe... \***scootches in closer**\*... a lot better... \***locks eyes**\*... I feel so connected with you right now... \***puts hand on thigh**\*... Do you feel the same?... \***rests other hand on the back of your neck**\*... \***closes eyes**\*... \***leans in**\* \***leaves a wet smoochy on your forehead**\*
 
 Well, let's move onto out last kernel. Take a look first, and then we'll discuss it... for the last time...
 
@@ -661,16 +664,27 @@ void Apply(uint3 id : SV_DispatchThreadID)
     RlTLight[id.xy] = 0;
 }
 ```
+All we are doing here is adding the real-time lighting and baked lighting into one texture. Then we reset the realtime lighting since it needs to be recalculated every frame. That's it. Was it an anti-climatic ending? I think it was. I will add an explosion in case you feel the same. 
+
+<div style="text-align:center;">
+    <img src="\images\lightScene\explodeTrans.gif">
+</div>
 
 Improvements and Optimizations
 ====
 ----
   1. Allow for multiple meshes
+        * right now, the lighting only works for one mesh and one texture. You can apply the lighting to multiple meshes and textures, and while they will share the same light sources, they will not cast shadows on each other. 
   1. Allow for moving meshes
+        * UV world spaces are caluclated once on the start frame, and then not again. This would have to change in order to allow for moving meshes. That's not difficult so much as making that efficient. 
   1. BSP
+        * according to the **Real time collision detection** textbook by Christer Ericson, the most efficient optimization for a process is simply to not do it at all. So that settles it. Im scrapping the project... Just kidding. But I can cut out some processes. Right now every triangle is considered when calculating lighting. This just isn't necessary. Nearby triagnles can be split into groups, at which point mass amounts of triangles can be cut out of the lighting calculation at the same time. 
   1. LOD textures and mesh 
+        * While this would help lighting, especially for far reaching lights like the sun, programming LODs specifically for my lighting would be beneficial all around. Unity already has LOD by default. But maybe just like I've done for lighting, Ill disable that and try to do it myself. 
   1. allow for lighting to work in editor
+        * this isn't an optimization for fps, but instead a quality of life change. It's annoying to have to run the game to see how a light looks. 
   1. changing lighting while in play mode should effect lighting in editor
+        * on the flip side the previous point, it would be nice that if you are running the game, the lighting can still be moved permanently (rather than going through the annoying process of copying values in play mode and pasting in the editor mode)
   1. ambient light
 
   ```sadly, I know that barrycentric is actually spelled barycentric. But I really want it to be barry.```
