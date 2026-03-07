@@ -396,7 +396,7 @@ Now as for the last term, `v + w <= 1`, take a look at the picture below. It is 
     </iframe>
 </div>
 
-You will notice that always \\(v + w = 1\\) along the dotted black border line. And since we have set our blue and green axis' to always have length 1 (even if they don't appear so) we know this will be true for any triangle. So we can see that, on top of `v` and `w` being positive this also must be true: `v + w <= 1` (well we can see a lot of things actually. For example if we look down, we can see our legs.)
+You will notice that always \\(v + w = 1\\) along the dotted black border line. And since we have set our blue and green axis' to always have length 1 (even if they don't appear so) we know this will be true for any triangle. So we can see that in order for a point to be inside of a triangle, on top of `v` and `w` being positive this also must be true: `v + w <= 1` (well we can see a lot of things actually. For example if we look down, we can see our legs.)
 
 While there are other ways to show this, for example treating each point as a metaphorical weight, this explanation makes most sense to me. 
 
