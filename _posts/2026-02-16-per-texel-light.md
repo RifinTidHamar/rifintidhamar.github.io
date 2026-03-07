@@ -72,7 +72,7 @@ Now let's make things lit. To be clear, *not* shadowed, just *lit*. That will ma
     <img src="\images\lightScene\Lit.png"> 
 </div>
 
-Notice how neither the crescent object or circle object block light from reaching the wavy ground, nor does the wavy ground block the deep parts of the crevices where light shouldn't reach. Again, the scene is not shadowed, just lit. So how is a pixel lit or unlit? A pixel being lit is based on the angle, [***A***] from ***the surface which the pixel is on*** to the ***direction of the light towards that surface***. 
+Notice how neither the crescent object or circle object block light from reaching the wavy ground, nor does the wavy ground block the deep parts of its crevices where light shouldn't reach. Again, the scene is not shadowed, just lit. So how is a pixel lit or unlit? A pixel being lit is based on the angle, [***A***] from ***the surface which the pixel is on*** to the ***direction of the light towards that surface***. 
 
 Here is one example of ***A*** at 90 degrees, where the surface and the direction of the light to the surface are perpendicular, and where the pixel would be most well lit. 
 <div style="text-align:center;">
