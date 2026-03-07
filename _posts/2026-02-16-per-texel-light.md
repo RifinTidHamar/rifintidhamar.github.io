@@ -99,7 +99,7 @@ Here's how we do that:
 
 * for every texel, [***Te***] (this is a multi-threaded process)
     * for every light, [***L***]
-        * for every triangle, [***Tr***], besides the triangle of ***Te***
+        * for every triangle, [***Tr***], besides the triangle which ***Te*** sits on
             1. shoot a ray from ***L*** to ***Te***, [***LR***]
             1. see if ***LR*** is parallel or past parallel to the surface of ***Tr*** 
             1. if it is *not* (meaning the surface of ***TR*** at least slightly faces ***L***) then check to see if ***LR*** intersectes with ***TR*** using a 3D-triangle-relative-position (This is a slighlty more robust version of the triangle-relative-position from above since relative-position is being caluclated in 3D-world-space vs 2D-UV-space, but we will discuss that later in the technical section)
