@@ -104,7 +104,7 @@ Here's how we do that:
             1. see if ***LR*** is parallel or past parallel to the surface of ***Tr*** 
             1. if it is *not* (meaning the surface of ***TR*** at least slightly faces ***L***) then check to see if ***LR*** intersectes with ***TR*** using a 3D-triangle-relative-position (This is a slighlty more robust version of the triangle-relative-position from above since relative-position is being caluclated in 3D-world-space vs 2D-UV-space, but we will discuss that later in the technical section)
             1. if it does, then we know that ***TR*** crosses the path of ***LR***, and we must shade ***Te***
-                * if the texel *is not* set to be dynamically blurred, break the loop ***Tr*** loop and check the next light. ***Te*** is shaded so we no longer care if ***LR*** intersects any other triangle
+                * if the texel *is not* set to be dynamically blurred, break the ***Tr*** loop and check the next light. ***Te*** is shaded so we no longer care if ***LR*** intersects any other triangle
                 * if the shadow *is* set be dynamically blurred, well then you had daggone better dynamically blur that thing!
 
 Dynamic Blurred Shadows
