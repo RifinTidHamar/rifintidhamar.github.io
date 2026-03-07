@@ -111,7 +111,7 @@ Dynamic Blurred Shadows
 ====
 Im going to explain how exactly I understand dynamic blurred shadows. I won't lie, it's probably not even close to physically correct. But, we don't need to be physically correct so long as it both looks good on the screen, and it's able to run well. 
 
-With that being said, set up a light which casts onto a wall. Now place your hand somwhere between the light and the wall. A shadow of your hand is cast onto the wall. 
+With that being said, try out this real world excercise. Set up a light which casts onto a wall. Now place your hand somwhere between the light and the wall. A shadow of your hand is cast onto the wall. 
 
 I bet your brain literally exploded right now. 
 
