@@ -650,7 +650,7 @@ Apply Kernel
 
 Well look at that. We're almost done. This has been quite the journey. I feel like I know you a little better. Like maybe... \***scootches in closer**\*... a lot better... \***locks eyes**\*... I feel so connected with you right now... \***puts hand on thigh**\*... Do you feel the same?... \***rests other hand on the back of your neck**\*... \***closes eyes**\*... \***leans in**\* \***leaves a wet smoochy on your forehead**\*
 
-Well, let's move onto out last kernel. Take a look first, and then we'll discuss it... for the last time...
+Well, let's move onto our last kernel. Take a look first, and then we'll discuss it... for the last time...
 
 ```cuda
 [numthreads(8, 8, 1)]
@@ -674,9 +674,9 @@ Improvements and Optimizations
   1. Allow for multiple meshes
         * right now, the lighting only works for one mesh and one texture. You can apply the lighting to multiple meshes and textures, and while they will share the same light sources, they will not cast shadows on each other. 
   1. Allow for moving meshes
-        * UV world spaces are caluclated once on the start frame, and then not again. This would have to change in order to allow for moving meshes. That's not difficult so much as making that efficient. 
+        * UV world spaces are caluclated once on the start frame, and then not again. This would have to change in order to allow for moving meshes. That's not difficult to do, but doing it efficiently is another story. 
   1. BSP
-        * according to the **Real time collision detection** textbook by Christer Ericson, the most efficient optimization for a process is simply to not do it at all. So that settles it. Im scrapping the project... Just kidding. But I can cut out some processes. Right now every triangle is considered when calculating lighting. This just isn't necessary. Nearby triagnles can be split into groups, at which point mass amounts of triangles can be cut out of the lighting calculation at the same time. 
+        * according to the **Real time collision detection** textbook by Christer Ericson, the most efficient optimization for a process is simply to not do it at all. So that settles it. Im scrapping the project... Just kidding. But I can cut out some processes. Right now every triangle is considered when calculating lighting. This just isn't necessary. Nearby triangles can be split into groups, at which point mass amounts of triangles can be cut out of the lighting calculation at the same time. 
   1. LOD textures and mesh 
         * While this would help lighting, especially for far reaching lights like the sun, programming LODs specifically for my lighting would be beneficial all around. Unity already has LOD by default. But maybe just like I've done for lighting, Ill disable that and try to do it myself. 
   1. allow for lighting to work in editor
