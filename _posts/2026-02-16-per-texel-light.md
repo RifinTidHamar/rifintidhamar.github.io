@@ -245,7 +245,7 @@ $$
 P = P_1 + v(P_2 - P_1) + w(P_3 - P_1)
 $$
 
-That function there represents the conceptual idea from the "UV space to World space" section above. Basically, a point, \\(P\\), can be represented entirely by a triangle, with \\(P_1, P_2, P_3\\) as the vertices. We decide that the origin is \\(P_1\\), and then we find how far up \\(P\\) is on the axis of "P2 to P1" AKA \\(v(P_2 - P_1)\\) and how far up \\(P\\) is on the axis of "P3 to P1" AKA \\(w(P_3 - P_1)\\). Keep in mind that we choose that those axis' each have a length of 1.
+That function represents the conceptual idea from the "UV space to World space" section above. Basically, a point, \\(P\\), can be represented entirely by a triangle, with \\(P_1, P_2, P_3\\) as the vertices. We decide that the origin is \\(P_1\\), and then we find how far up \\(P\\) is on the axis of "P2 to P1" AKA \\(v(P_2 - P_1)\\) and how far up \\(P\\) is on the axis of "P3 to P1" AKA \\(w(P_3 - P_1)\\). Keep in mind that we choose that those axis' each have a length of 1.
 
 Now that we have some functional basis, our goal is to solve for \\(v\\) and \\(w\\), which are the coordinate names of this triangle-relative-position (like \\(x\\) and \\(y\\) on a standard graph). Here is an overview of how we will do that.
 
@@ -337,7 +337,7 @@ $$
 
 For \\(v\\), the numerator is \\(A\\), but with the first column replaced by \\(B\\). For \\(w\\), the numerator is \\(A\\), but with the second column replaced by \\(B\\). The denominator in both cases is just \\(A\\). I'm not gonna go over why specifically these matrices-we-are-taking-determinants-of are formed the way they are, but I will just say if you were to solve the system of equations in a more "highschool" way, you would see that Cramer's rule is the same process. It just looks more concise. 
 
-Im gonna explain how to get a determinant value from a 2X2 matrix. Say you have have a Matrix \\(A\\). Now say...
+For the sake of understanding the code, Im gonna explain how to get a determinant value from a 2X2 matrix. Say you have have a Matrix \\(A\\). Now say...
 
 $$ A = 
 {\begin{bmatrix}
