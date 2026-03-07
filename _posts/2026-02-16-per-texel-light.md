@@ -117,11 +117,11 @@ I bet your brain literally exploded right now.
 
 Ok, but seriously, now move your hand back and forth between the light and the wall. Notice that as your hand moves closer to the wall, the lines of the shadow becomes more solid. As your hand moves closer to the light, the lines of the shadow blur. Now hold your hand still and move the light around. As the light gets closer to your hand the shadow of your hand blurs, and as the light moves away from your hand the shadow of your hand solidifies. So now we have some useful values:
 
-Visualized as the green line, the total distance of the light ray to the shaded texel, [***LR***]: 
+Visualized as the green line, here is a depiction of the total distance of the light ray to the shaded texel, [***LR***]: 
 <div style="text-align:center;">
     <img src="\images\lightScene\blur\lightRay.png"> 
 </div>
-Visualized as the green line, the nearest distance along the light ray from the shaded texel to the shading object, [***NLR***]:
+Visualized as the green line, here is a depiction of the nearest distance along the light ray from the shaded texel to the shading object, [***NLR***]:
 <div style="text-align:center;">
     <img src="\images\lightScene\blur\lightRayTex.png"> 
 </div>
