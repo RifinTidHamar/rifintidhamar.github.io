@@ -8,9 +8,7 @@ tags:
 ---
 Do you want to emulate older 3D games but with a new touch? This might interest you.
 
-expected completion: mid-late feb
-
-The following article is made for desktop. It will be conceptually and technically breaking down the process of the lighting in this video:
+The following article is easiest read on desktop. It will be conceptually and technically breaking down the process of the lighting in this video:
 {% include youtube.html id="Uief5d7zBRc" %}
 
 Conceptual
