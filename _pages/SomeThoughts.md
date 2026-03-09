@@ -3,6 +3,9 @@ title: "Thoughts"
 permalink: /thoughts/
 author_profile: true
 ---
+<i class="fa fa-calendar"></i> 3/9/2026 \
+I met a group of people at my church. They're pretty cool. Im so scared though. Im even having trouble sleeping and eating. Im afraid I'm gonna mess it up. I'm afraid I'm gonna be too closed off. I am trying to trust God though to give me the words that I need. I think there might be a girl there that I like. Im... pretty sure of it.  
+
 <i class="fa fa-calendar"></i> 2/16/2026 \
 I had a interview/chat with a guy named Jack today. It was for a scholarship. I don't think he liked me. The purpose of the chat was to demo my project, but he didn't want to see it. 
 
