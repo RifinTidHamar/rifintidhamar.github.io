@@ -65,7 +65,9 @@ I always cared about how my games looked, both those that I played and those tha
 
 But then... I began hearing whispers from the dark seldom-trodden limits of the internet about this strange... *thing* called a "Shader." But it was all just rumor, or perhaps something only the truly mad would dare engage. At best, maybe something I would learn in the distant future I thought. Then I stumbled across [Sebastian Lague](https://www.youtube.com/@SebastianLague). This guy made things in Unity I couldn't even imagine how to start: volumetric atmospheres, lovecraftian generated 3D fractals, and procedural planets. At the core of all these were "Shaders." It was so cool, and frankly I was jealous *he* could do that and *I* couldn't. So I started learning.
 
-Much of my early shader learning was through [The Art of Code](https://www.youtube.com/@TheArtofCodeIsCool). That channel taught me about concepts like fragment shaders, ray marching, and procedural shapes. Here is my first shader generated thing, ["Josh."](https://www.shadertoy.com/view/tl2XWc) 
+Much of my early shader learning was through [The Art of Code](https://www.youtube.com/@TheArtofCodeIsCool). That channel taught me about concepts like fragment shaders, ray marching, and procedural shapes. Here is my first shader generated thing, called Josh
+
+<iframe width="440" height="440" frameborder="0" src="https://www.shadertoy.com/embed/tl2XWc?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
 
 Dr. Boris Kovalerchuk and Data Visualization 
 ======
