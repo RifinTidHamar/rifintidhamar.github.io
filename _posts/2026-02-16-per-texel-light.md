@@ -62,7 +62,7 @@ So to summarize, this method allows us to know a texel's position relative to a 
 Lit
 ====
 
-Now let's move away from triangles, and--for the sake of simplicity--lets instead lets consider a 2D pixelated scene. Everything black is geometry, and the red is a light. 
+Now let's move away from triangles, and--for the sake of simplicity--instead lets consider a 2D pixelated scene. Everything black is geometry, and the red is a light. 
 <div style="text-align:center;">
     <img src="\images\lightScene\Scene.png"> 
 </div>
@@ -105,7 +105,7 @@ Here's how we do that:
             1. if it is *not* (meaning the surface of ***TR*** at least slightly faces ***L***) then check to see if ***LR*** intersectes with ***TR*** using a 3D-triangle-relative-position (This is a slighlty more robust version of the triangle-relative-position from above since relative-position is being caluclated in 3D-world-space vs 2D-UV-space, but we will discuss that later in the technical section)
             1. if it does, then we know that ***TR*** crosses the path of ***LR***, and we must shade ***Te***
                 * if the texel *is not* set to be dynamically blurred, break the ***Tr*** loop and check the next light. ***Te*** is shaded so we no longer care if ***LR*** intersects any other triangle
-                * if the shadow *is* set be dynamically blurred, well then you had daggone better dynamically blur that thing!
+                * if the shadow *is* set to be dynamically blurred, well then you had daggone better dynamically blur that thing!
 
 Dynamic Blurred Shadows
 ====
@@ -143,7 +143,7 @@ c# summary
     * Dispatch the **UvToWorld** kernel, which takes all texels of the mesh and finds their position in world space
     * Dispatch the **DynamicLight** kernel for baked lighting
 * for every update frame
-    * update arrays and buffers of lights sources for real time lights
+    * update arrays and buffers for light sources for real time lighting
     * dispatch the **DynamicLight** kernel for real time lighting
     * dispatch the **Apply** kernel, which combines the baked and real time lighting into one texture 
 
@@ -602,41 +602,41 @@ void DynamicLight(uint3 id : SV_DispatchThreadID)
 I think the best way to explain this code is to simplify it using pseudocode. Keep in mind this is a parallel process for every UV. 
 
 ```cuda
-if(the UV is used)
-    for(every light)
-        if(the UV is within range of the light 
+*if(the UV is used)
+    *for(every light)
+        *if(the UV is within range of the light 
         and the UVs angle to the light is less than 180 degrees)
-        |   if(the light casts a shadow)
-        |   |   for(every triangle)
-        |   |       if(the triangle's angle to the light is less than 180 degrees)
-        |   |           find how far it takes the light beam to intersect with the triangle
-        |   |           if(the light beam intersection is farther from the light than the UV is)
-        |   |               go the the next triangle, since it is beyond the UV 
+        |   *if(the light casts a shadow)
+        |   |   *for(every triangle)
+        |   |       *if(the triangle's angle to the light is less than 180 degrees)
+        |   |           *find how far it takes the light beam to intersect with the triangle
+        |   |           *if(the light beam intersection is farther from the light than the UV is)
+        |   |               *go the the next triangle, since the intersection is beyond the UV 
         |   |               so it can't possibly cause a shadow
-        |   |           make an intersection vector of the intersection distance 
-        |   |           with the angle of the light to the triangle.
-        |   |           if(that intersection vector still intersects with the triangle)
-        |   |               save the spot as shaded 
-        |   |               if(the light is set to cast dynamically blurred shadows)
-        |   |                   find the interesction which has the least distance to the UV
-        |   |                   lighten the shaded spot by: 
-        |   |                   (smallest interesction distance to UV) / (UV distance to light)
+        |   |           *make an intersection-vector with the length of the intersection distance 
+        |   |           and which is angled from the light to the triangle.
+        |   |           *if(that intersection-vector still intersects with the triangle)
+        |   |               *save the spot as a shaded-spot, to be used in the final lighting 
+        |   |               *if(the light is set to cast dynamically blurred shadows)
+        |   |                   *find the interesction-vector which has the least distance to the UV
+        |   |                   *lighten the shaded-spot by: 
+        |   |                   (smallest interesction-vector distance to UV) / (UV distance to light)
         |   |               else
-        |   |                   break the loop, since a spot can't be variablly shaded
+        |   |                   *break the loop, since a shaded-spot can't be variablly shaded
         |   |                   unless it is dynamically blurred. AKA hard shadows.
         |   |
-        |   if(the UV faces the light)
-        |       set a brightness value (a value 0 to 1) by multiplying:
-        |           a value 0 to 1, which approaches 0 the farther the light is from the UV
-        |           a value 0 to 1, which approaches 0 
-        |               as the angle between the UV and the light steepens
-        |       set the lit color by multiplying:
-        |           shaded spots (a value 0 to 1)
-        |           the brightness value multiplied by itself so that we have steeper light drop off
-        |           the color of the light
-        |           the intensity of the light (naturally set at 1)
+        |   *if(the UV faces the light)
+        |       *set a brightness value (a value 0 to 1) by multiplying:
+        |           *a value 0 to 1, which approaches 0 the farther the light is from the UV
+        |           *a value 0 to 1, which approaches 0 
+        |            as the angle between the UV and the light steepens
+        |       *set a lit-color by multiplying:
+        |           *shaded-spots (a value 0 to 1)
+        |           *the brightness value multiplied by itself so that we have steeper light drop off
+        |           *the color of the light
+        |           *the intensity of the light (naturally set at 1)
         |     
-        add the lit color to a total texture used in other kernels
+        *add the lit-color to a total texture used in other kernels
 ```
 
 The last bit of code that I think deserves special attention is this:
@@ -678,7 +678,7 @@ Improvements and Optimizations
   1. BSP
         * according to the **Real time collision detection** textbook by Christer Ericson, the most efficient optimization for a process is simply to not do it at all. So that settles it. Im scrapping the project... Just kidding. But I can cut out some processes. Right now every triangle is considered when calculating lighting. This just isn't necessary. Nearby triangles can be split into groups, at which point mass amounts of triangles can be cut out of the lighting calculation at the same time. 
   1. LOD textures and mesh 
-        * While this would help lighting, especially for far reaching lights like the sun, programming LODs specifically for my lighting would be beneficial all around. Unity already has LOD by default. But maybe just like I've done for lighting, Ill disable that and try to do it myself. 
+        * While this would help lighting performance, especially for far reaching lights like the sun, programming LODs specifically for my lighting would be beneficial all around. Unity already has LOD by default. But maybe just like I've done for lighting, Ill disable that and try to do it myself. 
   1. allow for lighting to work in editor
         * this isn't an optimization for fps, but instead a quality of life change. It's annoying to have to run the game to see how a light looks. 
   1. changing lighting while in play mode should effect lighting in editor
