@@ -21,6 +21,9 @@ main:
         
   - title: "Break Downs"
     url: /year-archive/
+
+  - title: "My Learning"
+    url: /my-learning/
     
   - title: "CV"
     url: /cv/

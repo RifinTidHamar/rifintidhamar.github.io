@@ -10,7 +10,7 @@ A glimpse of my work. Includes Procedural Models and Textures, a Custom lighting
 
 Deeper Dives into Tools
 ------
-***Per Texel Lighting*** -- This is a custom lighting-model which lights per texel (using an object's UVs). Its purpose is mainly artistic, but future plans include raytraced lighting optimized even for mobile devices. 
+***Per Texel Lighting*** -- This is a custom lighting-model which lights per texel (using an object's UVs). Its purpose is mainly artistic, but future plans include raytraced lighting optimized even for mobile devices. [Breakdown](/posts/2026/02/Per-Texel-Light/) 
 {% include youtube.html id="Uief5d7zBRc" %}
 \
 \

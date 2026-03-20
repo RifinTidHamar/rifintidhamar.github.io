@@ -14,7 +14,7 @@ The following article is easiest read on desktop. It will be conceptually and te
 Conceptual
 ====
 -----
-Lighting is pretty cool. Cavemen were pretty interested by it, and my great great great great great great great great great great great great great great great great great great great great great great great great great great great great great great grandpa was a caveman, so it makes sense that I would be interested by it too. 
+Lighting is pretty cool. Cavemen were pretty interested by it, and my greatx20 grandpa was a caveman (Im not 100% convinced my dad also is not a caveman), so it makes sense that I would be interested by it too. 
 
 In this *Conceptual* section, we are gonna be breaking down some ideas that will be useful in the technical section. 
 

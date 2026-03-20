@@ -20,6 +20,8 @@ Here's a summary of every page on this website:
 
 [**Break Downs**](/year-archive/): Technical and conceptual breakdowns of some of my projects. 
 
+[**My Learning**](/my-learning/): A brief rundown of what I studied and learned that day. 
+
 [**CV**](/cv/): My professional history, and professional facts. 
 
 [**Publications**](/publications/): My published research papers.
