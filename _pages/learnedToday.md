@@ -4,6 +4,13 @@ permalink: /my-learning/
 author_profile: true
 ---
 
+<i class="fa fa-calendar"></i> 3/23/2026 \
+Today I learned about getting into tech art. This is the series I wish I had found years ago. It's a [udemy course](https://www.udemy.com/share/10ao4y3@a1vE37t1TrmJrvfRp5Mh6EUgkxDj3VTUDvbLqDg3RYZ8z9o42YtTMsLLQKvFLm0kaw==/). I specifically learned about the different types of tech artists, of which these two sounded most interesting: lighting artist, and procedural artist. The lighting artist really doesn't need to know a lot outside of lighting and pbr. While the procedural artist should know a lot about linear algebra. The procedural artist will also deal with things like placing objects in the world, which I didn't expect, but I suppose makes sense. 
+
+Here's one thing that did suprise me. Apparently Tech artists need to know about all aspects of an engine, even things like audio and AI. AI I would get a little more, as perhaps an NPC could wander into your tech art mud, for example. But audio? Im excited to learn more about it. 
+
+I also learned a little more about the SRP, specifcally legacy shader tags. Basically what we did in the tutorial is consider all of the legacy shader tags so that we could color them purple, to show the user that these kinds of shaders are not allowed in our SRP. So I guess I actually learned less about legacy shader tags and more about error handling--which is cool. 
+
 <i class="fa fa-calendar"></i> 3/20/2026 \
 Today I learned about how to start setting up a custom Scriptable Render Pipeline. I'm using this [tutorial](https://catlikecoding.com/unity/tutorials/custom-srp/custom-render-pipeline/). It's a bit outdated, but still works with modern Unity versions. I'll just have to also learn the more modern way to do things once I'm done. Which will be a nice excercise in intself. 
 

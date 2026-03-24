@@ -4,6 +4,9 @@ permalink: /thoughts/
 author_profile: true
 ---
 <i class="fa fa-calendar"></i> 3/20/2026 \
+I have been feeling horrible anxiety, that Im not gonna be enough, that the girl will quickly dislike me, that Im not adult enough, not interesting enough, too annoying, too clingy, too crazy. All probably hold some truth. I also fear the freindgroup might try to purposefully ignore me/exclude me. These are just my fears. If they became realty, I would have to live with them. 
+
+<i class="fa fa-calendar"></i> 3/20/2026 \
 That girl I liked, turns out its mutual. We took a walk. She told me I say Tatoo funny. We got ice cream with her sister. We talked about our feelings. She likes zebras more than horses... weirdo. I gave her a few hugs. It was pretty awesome. I'm pretty infatuated. She's a bible scholar. She likes Habakkuk chapter 3, which is one of my favorites too. She got mad at me because I did tax evasion. But it's ok because she knows how to do taxes. She's gonna do my taxes, and Im gonna make her pasta and clean her house. She doesn't know about that yet, but I think she'll be down. 
 
 <i class="fa fa-calendar"></i> 3/9/2026 \
