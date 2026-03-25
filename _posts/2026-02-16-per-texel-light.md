@@ -8,7 +8,7 @@ tags:
 ---
 Do you want to emulate older 3D games but with a new touch? This might interest you.
 
-The following article is easiest read on desktop. It will be conceptually and technically breaking down the process of the lighting in this video:
+The following article is easiest read on desktop. It will be conceptually and technically breaking down the process of lighting in this [unity project](https://github.com/RifinTidHamar/Shadow-and-Light) displayed in this video:
 {% include youtube.html id="Uief5d7zBRc" %}
 
 Conceptual
@@ -675,6 +675,8 @@ Improvements and Optimizations
         * right now, the lighting only works for one mesh and one texture. You can apply the lighting to multiple meshes and textures, and while they will share the same light sources, they will not cast shadows on each other. 
   1. Allow for moving meshes
         * UV world spaces are caluclated once on the start frame, and then not again. This would have to change in order to allow for moving meshes. That's not difficult to do, but doing it efficiently is another story. 
+  1. Conditional rendering
+        * I think it would be cool to only render lights that the player can actually see the effects of. On top of that, if a light doesn't move, and no objects move in its vicinity, there's really no need to render it every frame. So, that would be a cool optimization too. 
   1. BSP
         * according to the **Real time collision detection** textbook by Christer Ericson, the most efficient optimization for a process is simply to not do it at all. So that settles it. Im scrapping the project... Just kidding. But I can cut out some processes. Right now every triangle is considered when calculating lighting. This just isn't necessary. Nearby triangles can be split into groups, at which point mass amounts of triangles can be cut out of the lighting calculation at the same time. 
   1. LOD textures and mesh 
