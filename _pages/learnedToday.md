@@ -3,6 +3,8 @@ title: "My Learning"
 permalink: /my-learning/
 author_profile: true
 ---
+<i class="fa fa-calendar"></i> 3/30/2026 \
+Im going on vacation this week! 
 
 <i class="fa fa-calendar"></i> 3/24/2026 \
 Today I took a break from learning the SRP, as I was applying for a cool job and wanted to have a very fine tuned application. I did still learn though. First I learned a little more about what it means to be a tech artist through this [udemy course](https://www.udemy.com/share/10ao4y3@a1vE37t1TrmJrvfRp5Mh6EUgkxDj3VTUDvbLqDg3RYZ8z9o42YtTMsLLQKvFLm0kaw==/). Specifically I learned about a good process for identifying performance issues. In summary, check to make sure there is a performance issues, disable suspect issues to see if they are actually issues, debug a frame of the program and check to see where spikes take place. I was already familiar with this process, but it was nice to have it confirmed. 
